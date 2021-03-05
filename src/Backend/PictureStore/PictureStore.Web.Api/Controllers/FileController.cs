@@ -26,7 +26,7 @@ namespace PictureStore.Web.Api.Controllers
         [Route("")]
         public async Task UploadFile(IFormFileCollection files)
         {
-            await uploadService.UploadAsync(files);
+
         }
 
         [HttpGet]

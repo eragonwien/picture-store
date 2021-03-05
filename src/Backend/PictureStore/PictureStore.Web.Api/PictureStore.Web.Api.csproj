@@ -8,17 +8,23 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<Compile Remove="Middlewares\**" />
+		<Compile Remove="Services\**" />
+		<Content Remove="Middlewares\**" />
+		<Content Remove="Services\**" />
+		<EmbeddedResource Remove="Middlewares\**" />
+		<EmbeddedResource Remove="Services\**" />
+		<None Remove="Middlewares\**" />
+		<None Remove="Services\**" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.13" />
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="..\PictureStore.Core\PictureStore.Core.csproj" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Folder Include="Middlewares\" />
-	  <Folder Include="Services\" />
 	</ItemGroup>
 
 	<PropertyGroup Condition=" '$(Configuration)' == '' Or '$(Configuration)' == 'Debug'">
