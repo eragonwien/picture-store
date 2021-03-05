@@ -5,22 +5,13 @@
 		<UserSecretsId>99daf391-a257-4415-b0ac-17704cb4527d</UserSecretsId>
 		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
 		<NoWarn>CS1998</NoWarn>
+		<LangVersion>latest</LangVersion>
+		<LanguageTargets>$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Bin\Microsoft.CSharp.targets</LanguageTargets>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<Compile Remove="Middlewares\**" />
-		<Compile Remove="Services\**" />
-		<Content Remove="Middlewares\**" />
-		<Content Remove="Services\**" />
-		<EmbeddedResource Remove="Middlewares\**" />
-		<EmbeddedResource Remove="Services\**" />
-		<None Remove="Middlewares\**" />
-		<None Remove="Services\**" />
-	</ItemGroup>
-
-	<ItemGroup>
 		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.13" />
-		<PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.0.7" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -34,4 +25,8 @@
 	<PropertyGroup Condition=" '$(Configuration)' != '' AND '$(Configuration)' != 'Debug' ">
 		<EnvironmentName>Production</EnvironmentName>
 	</PropertyGroup>
+
+	<Target Name="Build">
+		<Message Importance="High" Text="+++ Justin Dearing +++" />
+	</Target>
 </Project>
