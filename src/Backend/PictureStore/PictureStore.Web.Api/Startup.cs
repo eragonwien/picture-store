@@ -21,7 +21,10 @@ namespace PictureStore.Web.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddCoreServices();
+            services
+                .AddCoreServices()
+                .AddAppSettings(Configuration);
+
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
@@ -37,18 +40,16 @@ namespace PictureStore.Web.Api
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "PictureStore.Web.Api v1"));
+                app.UseHttpsRedirection();
             }
             else
             {
                 app.UseExceptionHandler("/error");
+                app.UseForwardedHeaders(new ForwardedHeadersOptions
+                {
+                    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+                });
             }
-
-            //app.UseHttpsRedirection();
-
-            app.UseForwardedHeaders(new ForwardedHeadersOptions
-            {
-                ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
-            });
 
             app.UseRouting();
 
