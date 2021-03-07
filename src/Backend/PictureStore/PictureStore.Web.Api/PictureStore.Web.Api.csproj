@@ -7,6 +7,7 @@
 		<NoWarn>CS1998</NoWarn>
 		<LangVersion>latest</LangVersion>
 		<LanguageTargets>$(MSBuildBinPath)\Microsoft.CSharp.targets</LanguageTargets>
+		<Configurations>Debug;Release;RaspberryPiRelease</Configurations>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -27,6 +28,6 @@
 	</PropertyGroup>
 
 	<Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-		<Copy SourceFiles="$(EnvironmentName).Dockerfile" DestinationFiles="Dockerfile" />
+		<Copy SourceFiles="Docker/$(Configuration).Dockerfile" DestinationFiles="Dockerfile" />
 	</Target>
 </Project>

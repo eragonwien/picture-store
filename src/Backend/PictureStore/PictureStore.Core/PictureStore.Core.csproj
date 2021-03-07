@@ -3,6 +3,7 @@
 	<PropertyGroup>
 		<TargetFramework>net5.0</TargetFramework>
 		<NoWarn>CS1998</NoWarn>
+		<Configurations>Debug;Release;RaspberryPiRelease</Configurations>
 	</PropertyGroup>
 
 	<ItemGroup>
