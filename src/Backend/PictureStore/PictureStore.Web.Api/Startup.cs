@@ -37,19 +37,20 @@ namespace PictureStore.Web.Api
         {
             if (env.IsDevelopment())
             {
-                app.UseDeveloperExceptionPage();
+                //app.UseDeveloperExceptionPage();
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "PictureStore.Web.Api v1"));
                 app.UseHttpsRedirection();
             }
             else
             {
-                app.UseExceptionHandler("/error");
                 app.UseForwardedHeaders(new ForwardedHeadersOptions
                 {
                     ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
                 });
             }
+
+            app.UseExceptionHandler("/error");
 
             app.UseRouting();
 

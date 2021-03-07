@@ -17,14 +17,13 @@ namespace PictureStore.Web.Api.Controllers
             this.env = env;
         }
 
-        [NonAction]
         [Route("")]
         public ErrorResponseModel Error()
         {
             var context = HttpContext.Features.Get<IExceptionHandlerFeature>();
             var exception = context.Error;
 
-            Response.StatusCode = (int) HttpStatusCode.InternalServerError;
+            Response.StatusCode = (int)HttpStatusCode.InternalServerError;
             return new ErrorResponseModel(exception, env.IsDevelopment()); // Your error model
         }
     }
