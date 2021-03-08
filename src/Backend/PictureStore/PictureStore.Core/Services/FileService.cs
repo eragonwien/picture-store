@@ -6,6 +6,7 @@ using Microsoft.Extensions.Options;
 using PictureStore.Core.Models;
 using PictureStore.Core.Models.AppSettings;
 using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats.Jpeg;
 
 namespace PictureStore.Core.Services
 {
@@ -41,26 +42,8 @@ namespace PictureStore.Core.Services
 
             try
             {
-                var creationTime = DateTime.Now;
-                var filename = $"{creationTime:yyyyMMddHHmmssfff}.jpeg";
-                var filePath = Path.Combine(uploadAppSettings.Directory, filename);
-
-                // Copies to a temporary stream
-                await using var imageStream = new MemoryStream();
-                await stream.CopyToAsync(imageStream, cancellationToken);
-
-                // Converts file to jpeg image
-                imageStream.Seek(0, SeekOrigin.Begin);
-                var image = await Image.LoadAsync(imageStream);
-                await image.SaveAsJpegAsync(imageStream, cancellationToken);
-
-                // Saves file
-                imageStream.Seek(0, SeekOrigin.Begin);
-                await using var fileStream = File.Create(filePath);
-                await imageStream.CopyToAsync(fileStream, cancellationToken);
-
-                File.SetCreationTime(filePath, creationTime);
-                File.SetLastWriteTime(filePath, creationTime);
+                await using var imageStream = await LoadImageStreamAsync(stream, cancellationToken);
+                await SaveImageAsync(imageStream, cancellationToken);
 
                 result.Succeed = true;
             }
@@ -70,6 +53,36 @@ namespace PictureStore.Core.Services
             }
 
             return result;
+        }
+
+        private static async Task<Stream> LoadImageStreamAsync(Stream fileStream, CancellationToken cancellationToken)
+        {
+            var imageStream = new MemoryStream();
+            var encoder = new JpegEncoder {Quality = 90};
+
+            fileStream.Seek(0, SeekOrigin.Begin);
+            await fileStream.CopyToAsync(imageStream, cancellationToken);
+
+            imageStream.Seek(0, SeekOrigin.Begin);
+            var image = await Image.LoadAsync(imageStream);
+            await image.SaveAsJpegAsync(imageStream, encoder, cancellationToken);
+
+            return imageStream;
+        }
+
+        private async Task SaveImageAsync(Stream imageStream, CancellationToken cancellationToken)
+        {
+            var creationTime = DateTime.Now;
+            var filename = $"{creationTime:yyyyMMddHHmmssfff}.jpeg";
+            var filePath = Path.Combine(uploadAppSettings.Directory, filename);
+
+            imageStream.Seek(0, SeekOrigin.Begin);
+
+            await using var fileStream = File.Create(filePath);
+            await imageStream.CopyToAsync(fileStream, cancellationToken);
+
+            File.SetCreationTime(filePath, creationTime);
+            File.SetLastWriteTime(filePath, creationTime);
         }
     }
 }
