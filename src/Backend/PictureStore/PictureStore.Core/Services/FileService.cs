@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
@@ -31,7 +32,7 @@ namespace PictureStore.Core.Services
             throw new NotImplementedException();
         }
 
-        public async Task<IEnumerable<MovingFileError>> MoveToDownloadFolderAsync(CancellationToken cancellationToken)
+        public async Task MoveToDownloadFolderAsync(CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -46,7 +47,7 @@ namespace PictureStore.Core.Services
                 {
                     var creationTime = File.GetCreationTime(sourceFilePath);
                     var destinationDirectory = Path.Combine(downloadAppSettings.Directory, creationTime.ToString(fileShortDateFormat));
-                    destinationFilePath = sourceFilePath.Replace(uploadAppSettings.Directory, destinationDirectory); 
+                    destinationFilePath = sourceFilePath.Replace(uploadAppSettings.Directory, destinationDirectory);
 
                     Directory.CreateDirectory(destinationDirectory);
                     File.Move(sourceFilePath, destinationFilePath);
@@ -55,10 +56,11 @@ namespace PictureStore.Core.Services
                 {
                     errors.Add(new MovingFileError(sourceFilePath, destinationFilePath, ex.Message));
                 }
-                
+
             }
 
-            return errors;
+            if (errors.Any())
+                throw new MoveToDownloadFolderException(errors);
         }
 
         public Task ListAsync(int page)
@@ -67,7 +69,7 @@ namespace PictureStore.Core.Services
         }
 
         public async Task<FileUploadPartialResult> UploadAsync(
-            string inputFileName, 
+            string inputFileName,
             Stream stream,
             CancellationToken cancellationToken)
         {
@@ -93,7 +95,7 @@ namespace PictureStore.Core.Services
         private static async Task<Stream> LoadImageStreamAsync(Stream fileStream, CancellationToken cancellationToken)
         {
             var imageStream = new MemoryStream();
-            var encoder = new JpegEncoder {Quality = 90};
+            var encoder = new JpegEncoder { Quality = 90 };
 
             fileStream.Seek(0, SeekOrigin.Begin);
             await fileStream.CopyToAsync(imageStream, cancellationToken);

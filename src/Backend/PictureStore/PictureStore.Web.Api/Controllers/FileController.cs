@@ -37,9 +37,9 @@ namespace PictureStore.Web.Api.Controllers
 
         [HttpPost]
         [Route("move")]
-        public async Task<IEnumerable<MovingFileError>> MoveToDownloadFolder(CancellationToken cancellationToken)
+        public async Task MoveToDownloadFolder(CancellationToken cancellationToken)
         {
-            return await fileService.MoveToDownloadFolderAsync(cancellationToken);
+            await fileService.MoveToDownloadFolderAsync(cancellationToken);
         }
 
         [HttpGet]

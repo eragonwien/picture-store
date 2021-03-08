@@ -10,13 +10,13 @@ namespace PictureStore.Core.Services
     {
         Task<FileUploadPartialResult> UploadAsync(
             string inputFileName,
-            Stream stream, 
+            Stream stream,
             CancellationToken cancellationToken);
 
         Task ListAsync(int page);
 
         Task DownloadAsync(int id);
 
-        Task<IEnumerable<MovingFileError>> MoveToDownloadFolderAsync(CancellationToken cancellationToken);
+        Task MoveToDownloadFolderAsync(CancellationToken cancellationToken);
     }
 }
