@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
@@ -90,6 +91,30 @@ namespace PictureStore.Core.Services
             }
 
             return result;
+        }
+
+        public async Task CleanupAsync(CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            var duplicates = Directory
+                .GetFiles(downloadAppSettings.Directory)
+                .Select(filename =>
+                {
+                    using var stream = new FileStream(filename, FileMode.Open, FileAccess.Read);
+
+                    return new
+                    {
+                        FileName = filename,
+                        FileHash = BitConverter.ToString(SHA1.Create().ComputeHash(stream))
+                    };
+                })
+                .GroupBy(f => f.FileHash)
+                .Select(g => new { FileHash = g.Key, Files = g.Select(x => x.FileName).OrderBy(x => x).ToList() })
+                .SelectMany(f => f.Files.Skip(1))
+                .ToList();
+
+            duplicates.ForEach(File.Delete);
         }
 
         private static async Task<Stream> LoadImageStreamAsync(Stream fileStream, CancellationToken cancellationToken)

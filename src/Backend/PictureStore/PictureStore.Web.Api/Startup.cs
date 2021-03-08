@@ -73,7 +73,7 @@ namespace PictureStore.Web.Api
 
                 if (errorContext is null) return;
 
-                context.Response.StatusCode = (int) HttpStatusCode.InternalServerError;
+                context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
                 context.Response.ContentType = "application/json";
 
                 var result = new ErrorResponseModel(errorContext.Error, env.IsDevelopment());
