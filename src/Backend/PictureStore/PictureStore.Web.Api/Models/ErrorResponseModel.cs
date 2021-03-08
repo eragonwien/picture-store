@@ -12,7 +12,7 @@ namespace PictureStore.Web.Api.Models
         {
             Type = exception.GetType().Name;
             Message = exception.Message;
-            StackTrace = !isDevelopment ? exception.StackTrace : null;
+            StackTrace = isDevelopment ? exception.StackTrace : null;
         }
     }
 }
