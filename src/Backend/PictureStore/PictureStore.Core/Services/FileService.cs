@@ -97,24 +97,26 @@ namespace PictureStore.Core.Services
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            var duplicates = Directory
-                .GetFiles(downloadAppSettings.Directory)
-                .Select(filename =>
-                {
-                    using var stream = new FileStream(filename, FileMode.Open, FileAccess.Read);
-
-                    return new
-                    {
-                        FileName = filename,
-                        FileHash = BitConverter.ToString(SHA1.Create().ComputeHash(stream))
-                    };
-                })
+            var duplicates = GetFiles(downloadAppSettings.Directory)
+                .Select(FileCompareDetails.ReadFile)
                 .GroupBy(f => f.FileHash)
                 .Select(g => new { FileHash = g.Key, Files = g.Select(x => x.FileName).OrderBy(x => x).ToList() })
                 .SelectMany(f => f.Files.Skip(1))
                 .ToList();
 
             duplicates.ForEach(File.Delete);
+        }
+
+        private ICollection<string> GetFiles(string directory)
+        {
+            var files = new List<string>();
+
+            files.AddRange(Directory.GetFiles(directory));
+
+            foreach (var subDir in Directory.GetDirectories(directory))
+                files.AddRange(GetFiles(subDir));
+
+            return files;
         }
 
         private static async Task<Stream> LoadImageStreamAsync(Stream fileStream, CancellationToken cancellationToken)
