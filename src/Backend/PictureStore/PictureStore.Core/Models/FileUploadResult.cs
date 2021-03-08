@@ -9,9 +9,7 @@ namespace PictureStore.Core.Models
 
         public int SuccessCount { get; set; }
 
-        public int FailCount { get; set; }
-
-        public List<string> FailedFiles { get; set; } = new();
+        public List<FileUploadError> Errors { get; set; } = new();
 
         public FileUploadResult Add(FileUploadPartialResult partialResult)
         {
@@ -20,7 +18,7 @@ namespace PictureStore.Core.Models
             if (partialResult.Succeed)
                 AddSuccessResult(partialResult);
             else
-                AddFailedResult(partialResult);
+                AddErrors(partialResult);
 
             return this;
         }
@@ -33,13 +31,12 @@ namespace PictureStore.Core.Models
             SuccessCount++;
         }
 
-        private void AddFailedResult(FileUploadPartialResult partialResult)
+        private void AddErrors(FileUploadPartialResult partialResult)
         {
             if (partialResult is null) return;
 
             TotalCount++;
-            FailCount++;
-            FailedFiles.Add(partialResult.FileName);
+            Errors.Add(new FileUploadError(partialResult.FileName, partialResult.Message));
         }
     }
 }

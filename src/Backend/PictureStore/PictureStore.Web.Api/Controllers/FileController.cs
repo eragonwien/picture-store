@@ -35,6 +35,13 @@ namespace PictureStore.Web.Api.Controllers
             return results;
         }
 
+        [HttpPost]
+        [Route("cleanup")]
+        public async Task CleanUp(CancellationToken cancellationToken)
+        {
+            await fileService.CleanUpAsync(cancellationToken);
+        }
+
         [HttpGet]
         [Route("")]
         public async Task ListFile([FromQuery] int page)

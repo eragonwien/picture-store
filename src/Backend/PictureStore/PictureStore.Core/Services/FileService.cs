@@ -13,15 +13,30 @@ namespace PictureStore.Core.Services
     public class FileService : IFileService
     {
         private readonly PictureStoreUploadAppSettings uploadAppSettings;
+        private readonly PictureStoreDownloadAppSettings downloadAppSettings;
 
-        public FileService(IOptions<PictureStoreUploadAppSettings> uploadAppSettingsOptions)
+        private const string fileLongDateFormat = "yyyyMMddHHmmssfff";
+        private const string fileShortDateFormat = "yyyyMMdd";
+
+        public FileService(IOptions<PictureStoreUploadAppSettings> uploadAppSettingsOptions,
+            IOptions<PictureStoreDownloadAppSettings> downloadAppSettingsOptions)
         {
+            this.downloadAppSettings = downloadAppSettingsOptions.Value;
             uploadAppSettings = uploadAppSettingsOptions.Value;
         }
 
         public Task DownloadAsync(int id)
         {
             throw new NotImplementedException();
+        }
+
+        public async Task CleanUpAsync(CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            Directory.CreateDirectory(downloadAppSettings.Directory);
+
+
         }
 
         public Task ListAsync(int page)
@@ -73,11 +88,13 @@ namespace PictureStore.Core.Services
         private async Task SaveImageAsync(Stream imageStream, CancellationToken cancellationToken)
         {
             var creationTime = DateTime.Now;
-            var filename = $"{creationTime:yyyyMMddHHmmssfff}.jpeg";
-            var filePath = Path.Combine(uploadAppSettings.Directory, filename);
+            var fileDirectory = Path.Combine(uploadAppSettings.Directory, creationTime.ToString(fileShortDateFormat));
+            var filename = $"{creationTime.ToString(fileLongDateFormat)}.jpeg";
+            var filePath = Path.Combine(fileDirectory, filename);
 
             imageStream.Seek(0, SeekOrigin.Begin);
 
+            Directory.CreateDirectory(fileDirectory);
             await using var fileStream = File.Create(filePath);
             await imageStream.CopyToAsync(fileStream, cancellationToken);
 

@@ -37,7 +37,7 @@
       "publishAllPorts": true,
       "httpPort": 51803,
       "useSSL": true,
-      "DockerfileRunArguments": "-v C:\\temp\\picture-store\\files:/upload_files",
+      "DockerfileRunArguments": "-v C:\\temp\\picture-store\\upload_files:/upload_files -v C:\\temp\\picture-store\\download_files:/download_files ",
       "sslPort": 49170
     }
   }

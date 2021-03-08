@@ -15,5 +15,7 @@ namespace PictureStore.Core.Services
         Task ListAsync(int page);
 
         Task DownloadAsync(int id);
+
+        Task CleanUpAsync(CancellationToken cancellationToken);
     }
 }
