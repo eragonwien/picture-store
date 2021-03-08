@@ -1,11 +1,9 @@
-﻿using System;
-using System.IO;
+﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
-using PictureStore.Core.Models.AppSettings;
+using PictureStore.Core.Models;
 using PictureStore.Core.Services;
 
 namespace PictureStore.Web.Api.Controllers
@@ -22,15 +20,19 @@ namespace PictureStore.Web.Api.Controllers
 
         [HttpPost]
         [Route("")]
-        public async Task UploadFile(IFormFileCollection files, CancellationToken cancellationToken)
+        public async Task<FileUploadResult> UploadFile(IFormFileCollection files, CancellationToken cancellationToken)
         {
+            var results = new FileUploadResult();
+
             foreach (var file in files)
             {
                 if (file.Length == 0) continue;
 
                 await using var fileStream = file.OpenReadStream();
-                await fileService.UploadAsync(fileStream, cancellationToken);
+                results.Add(await fileService.UploadAsync(file.FileName, fileStream, cancellationToken));
             }
+
+            return results;
         }
 
         [HttpGet]

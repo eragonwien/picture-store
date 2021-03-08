@@ -3,7 +3,9 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
+using PictureStore.Core.Models;
 using PictureStore.Core.Models.AppSettings;
+using SixLabors.ImageSharp;
 
 namespace PictureStore.Core.Services
 {
@@ -26,24 +28,48 @@ namespace PictureStore.Core.Services
             throw new NotImplementedException();
         }
 
-        public async Task UploadAsync(Stream stream, CancellationToken cancellationToken)
+        public async Task<FileUploadPartialResult> UploadAsync(
+            string inputFileName, 
+            Stream stream,
+            CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
             Directory.CreateDirectory(uploadAppSettings.Directory);
 
-            // TODO: converts file to jpg file
+            var result = new FileUploadPartialResult(inputFileName);
 
-            var creationTime = DateTime.Now;
-            var filename = $"{creationTime:yyyyMMddHHmmssfff}.jpg";
-            var filePath = Path.Combine(uploadAppSettings.Directory, filename);
+            try
+            {
+                var creationTime = DateTime.Now;
+                var filename = $"{creationTime:yyyyMMddHHmmssfff}.jpeg";
+                var filePath = Path.Combine(uploadAppSettings.Directory, filename);
 
-            await using var fileStream = File.Create(filePath);
-            stream.Seek(0, SeekOrigin.Begin);
+                // Copies to a temporary stream
+                await using var imageStream = new MemoryStream();
+                await stream.CopyToAsync(imageStream, cancellationToken);
 
-            await stream.CopyToAsync(fileStream, cancellationToken);
-            File.SetCreationTime(filePath, creationTime);
-            File.SetLastWriteTime(filePath, creationTime);
+                // Converts file to jpeg image
+                imageStream.Seek(0, SeekOrigin.Begin);
+                var image = await Image.LoadAsync(imageStream);
+                await image.SaveAsJpegAsync(imageStream, cancellationToken);
+
+                // Saves file
+                imageStream.Seek(0, SeekOrigin.Begin);
+                await using var fileStream = File.Create(filePath);
+                await imageStream.CopyToAsync(fileStream, cancellationToken);
+
+                File.SetCreationTime(filePath, creationTime);
+                File.SetLastWriteTime(filePath, creationTime);
+
+                result.Succeed = true;
+            }
+            catch (Exception ex)
+            {
+                result.Error(ex);
+            }
+
+            return result;
         }
     }
 }
