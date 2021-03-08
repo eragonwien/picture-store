@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using PictureStore.Core.Models;
@@ -16,6 +17,6 @@ namespace PictureStore.Core.Services
 
         Task DownloadAsync(int id);
 
-        Task CleanUpAsync(CancellationToken cancellationToken);
+        Task<IEnumerable<MovingFileError>> MoveToDownloadFolderAsync(CancellationToken cancellationToken);
     }
 }

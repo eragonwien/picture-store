@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -30,13 +31,34 @@ namespace PictureStore.Core.Services
             throw new NotImplementedException();
         }
 
-        public async Task CleanUpAsync(CancellationToken cancellationToken)
+        public async Task<IEnumerable<MovingFileError>> MoveToDownloadFolderAsync(CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            Directory.CreateDirectory(downloadAppSettings.Directory);
+            var uploadFilePaths = Directory.GetFiles(uploadAppSettings.Directory);
 
+            var errors = new List<MovingFileError>();
 
+            foreach (var sourceFilePath in uploadFilePaths)
+            {
+                string destinationFilePath = null;
+                try
+                {
+                    var creationTime = File.GetCreationTime(sourceFilePath);
+                    var destinationDirectory = Path.Combine(downloadAppSettings.Directory, creationTime.ToString(fileShortDateFormat));
+                    destinationFilePath = sourceFilePath.Replace(uploadAppSettings.Directory, destinationDirectory); 
+
+                    Directory.CreateDirectory(destinationDirectory);
+                    File.Move(sourceFilePath, destinationFilePath);
+                }
+                catch (Exception ex)
+                {
+                    errors.Add(new MovingFileError(sourceFilePath, destinationFilePath, ex.Message));
+                }
+                
+            }
+
+            return errors;
         }
 
         public Task ListAsync(int page)
@@ -50,8 +72,6 @@ namespace PictureStore.Core.Services
             CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-
-            Directory.CreateDirectory(uploadAppSettings.Directory);
 
             var result = new FileUploadPartialResult(inputFileName);
 
@@ -88,13 +108,11 @@ namespace PictureStore.Core.Services
         private async Task SaveImageAsync(Stream imageStream, CancellationToken cancellationToken)
         {
             var creationTime = DateTime.Now;
-            var fileDirectory = Path.Combine(uploadAppSettings.Directory, creationTime.ToString(fileShortDateFormat));
             var filename = $"{creationTime.ToString(fileLongDateFormat)}.jpeg";
-            var filePath = Path.Combine(fileDirectory, filename);
+            var filePath = Path.Combine(uploadAppSettings.Directory, filename);
 
             imageStream.Seek(0, SeekOrigin.Begin);
 
-            Directory.CreateDirectory(fileDirectory);
             await using var fileStream = File.Create(filePath);
             await imageStream.CopyToAsync(fileStream, cancellationToken);
 

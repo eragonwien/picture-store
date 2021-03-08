@@ -36,10 +36,10 @@ namespace PictureStore.Web.Api.Controllers
         }
 
         [HttpPost]
-        [Route("cleanup")]
-        public async Task CleanUp(CancellationToken cancellationToken)
+        [Route("move")]
+        public async Task<IEnumerable<MovingFileError>> MoveToDownloadFolder(CancellationToken cancellationToken)
         {
-            await fileService.CleanUpAsync(cancellationToken);
+            return await fileService.MoveToDownloadFolderAsync(cancellationToken);
         }
 
         [HttpGet]
