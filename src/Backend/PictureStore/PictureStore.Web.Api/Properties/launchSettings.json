@@ -38,7 +38,7 @@
       "publishAllPorts": true,
       "httpPort": 51803,
       "useSSL": true,
-      "DockerfileRunArguments": "-v C:\\Users\\erago\\Pictures\\picture-store\\files:/upload_files",
+      "DockerfileRunArguments": "-v C:\\temp\\erago\\picture-store\\files:/upload_files",
       "sslPort": 49170
     }
   }
