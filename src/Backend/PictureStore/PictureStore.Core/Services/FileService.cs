@@ -38,7 +38,7 @@ namespace PictureStore.Core.Services
             var filename = $"{creationTime:yyyyMMddHHmmssfff}.jpg";
             var filePath = Path.Combine(uploadAppSettings.Directory, filename);
 
-            using var fileStream = File.Create(filePath);
+            await using var fileStream = File.Create(filePath);
             stream.Seek(0, SeekOrigin.Begin);
 
             await stream.CopyToAsync(fileStream, cancellationToken);

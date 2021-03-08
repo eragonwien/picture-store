@@ -1,11 +1,15 @@
+using System.Net;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using PictureStore.Web.Api.Extensions;
+using PictureStore.Web.Api.Models;
 
 namespace PictureStore.Web.Api
 {
@@ -37,7 +41,6 @@ namespace PictureStore.Web.Api
         {
             if (env.IsDevelopment())
             {
-                //app.UseDeveloperExceptionPage();
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "PictureStore.Web.Api v1"));
                 app.UseHttpsRedirection();
@@ -50,7 +53,7 @@ namespace PictureStore.Web.Api
                 });
             }
 
-            app.UseExceptionHandler("/error");
+            app.UseExceptionHandler(a => ConfigureExceptionHandler(a, env));
 
             app.UseRouting();
 
@@ -59,6 +62,22 @@ namespace PictureStore.Web.Api
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+            });
+        }
+
+        private void ConfigureExceptionHandler(IApplicationBuilder app, IHostEnvironment env)
+        {
+            app.Run(async context =>
+            {
+                var errorContext = context.Features.Get<IExceptionHandlerPathFeature>();
+
+                if (errorContext is null) return;
+
+                context.Response.StatusCode = (int) HttpStatusCode.InternalServerError;
+                context.Response.ContentType = "application/json";
+
+                var result = new ErrorResponseModel(errorContext.Error, env.IsDevelopment());
+                await context.Response.WriteAsJsonAsync(result);
             });
         }
     }

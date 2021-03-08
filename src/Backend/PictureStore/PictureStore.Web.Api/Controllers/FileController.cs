@@ -28,7 +28,7 @@ namespace PictureStore.Web.Api.Controllers
             {
                 if (file.Length == 0) continue;
 
-                await using Stream fileStream = file.OpenReadStream();
+                await using var fileStream = file.OpenReadStream();
                 await fileService.UploadAsync(fileStream, cancellationToken);
             }
         }
