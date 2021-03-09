@@ -4,17 +4,17 @@ using System.Security.Cryptography;
 
 namespace PictureStore.Core.Models
 {
-    public class FileCompareDetails
+    public class FileDetails
     {
         public string FileName { get; set; }
 
         public string FileHash { get; set; }
 
-        public static FileCompareDetails ReadFile(string filename)
+        public static FileDetails ReadFile(string filename)
         {
             using var stream = new FileStream(filename, FileMode.Open, FileAccess.Read);
 
-            return new FileCompareDetails
+            return new FileDetails
             {
                 FileName = filename,
                 FileHash = BitConverter.ToString(SHA1.Create().ComputeHash(stream))

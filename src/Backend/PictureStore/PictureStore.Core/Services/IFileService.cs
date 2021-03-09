@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,11 +14,11 @@ namespace PictureStore.Core.Services
             Stream stream,
             CancellationToken cancellationToken);
 
-        Task ListAsync(int page);
+        FileListingModel ListFiles(string folder, CancellationToken cancellationToken);
 
-        Task DownloadAsync(int id);
+        Task DownloadAsync(string id);
 
         Task MoveToDownloadFolderAsync(CancellationToken cancellationToken);
-        Task CleanupAsync(CancellationToken cancellationToken);
+        Task<IEnumerable<DuplicateFileModel>> ListDuplicatesAsync(CancellationToken cancellationToken);
     }
 }

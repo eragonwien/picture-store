@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -42,25 +43,25 @@ namespace PictureStore.Web.Api.Controllers
             await fileService.MoveToDownloadFolderAsync(cancellationToken);
         }
 
-        [HttpPost]
-        [Route("cleanup")]
-        public async Task Cleanup(CancellationToken cancellationToken)
+        [HttpGet]
+        [Route("list")]
+        public FileListingModel ListFile([FromQuery] string folder, CancellationToken cancellationToken)
         {
-            await fileService.CleanupAsync(cancellationToken);
+            return fileService.ListFiles(folder, cancellationToken);
         }
 
         [HttpGet]
-        [Route("")]
-        public async Task ListFile([FromQuery] int page)
+        [Route("duplicates")]
+        public async Task<IEnumerable<DuplicateFileModel>> GetDuplicates(CancellationToken cancellationToken)
         {
-            await fileService.ListAsync(page);
+            return await fileService.ListDuplicatesAsync(cancellationToken);
         }
 
         [HttpGet]
-        [Route("{id}")]
-        public async Task DownloadFile([FromRoute] int id)
+        [Route("download/{path}")]
+        public async Task DownloadFile([FromRoute] string path)
         {
-            await fileService.DownloadAsync(id);
+            await fileService.DownloadAsync(path);
         }
     }
 }

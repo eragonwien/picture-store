@@ -24,11 +24,11 @@ namespace PictureStore.Core.Services
         public FileService(IOptions<PictureStoreUploadAppSettings> uploadAppSettingsOptions,
             IOptions<PictureStoreDownloadAppSettings> downloadAppSettingsOptions)
         {
-            this.downloadAppSettings = downloadAppSettingsOptions.Value;
+            downloadAppSettings = downloadAppSettingsOptions.Value;
             uploadAppSettings = uploadAppSettingsOptions.Value;
         }
 
-        public Task DownloadAsync(int id)
+        public Task DownloadAsync(string id)
         {
             throw new NotImplementedException();
         }
@@ -64,9 +64,16 @@ namespace PictureStore.Core.Services
                 throw new MoveToDownloadFolderException(errors);
         }
 
-        public Task ListAsync(int page)
+        public FileListingModel ListFiles(string folder, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            cancellationToken.ThrowIfCancellationRequested();
+
+            var list = new FileListingModel(downloadAppSettings.Directory);
+
+            if (!string.IsNullOrWhiteSpace(folder) && !folder.StartsWith(downloadAppSettings.Directory))
+                folder = Path.Combine(downloadAppSettings.Directory, folder);
+
+            return list.ListFiles(folder);
         }
 
         public async Task<FileUploadPartialResult> UploadAsync(
@@ -93,21 +100,19 @@ namespace PictureStore.Core.Services
             return result;
         }
 
-        public async Task CleanupAsync(CancellationToken cancellationToken)
+        public async Task<IEnumerable<DuplicateFileModel>> ListDuplicatesAsync(CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            var duplicates = GetFiles(downloadAppSettings.Directory)
-                .Select(FileCompareDetails.ReadFile)
+            return GetFiles(downloadAppSettings.Directory)
+                .Select(FileDetails.ReadFile)
                 .GroupBy(f => f.FileHash)
-                .Select(g => new { FileHash = g.Key, Files = g.Select(x => x.FileName).OrderBy(x => x).ToList() })
-                .SelectMany(f => f.Files.Skip(1))
+                .Select(g => new DuplicateFileModel(g.Key, g.OrderBy(x => x.FileName).Select(x => x.FileName)))
+                .Where(m => m.HasDuplicate)
                 .ToList();
-
-            duplicates.ForEach(File.Delete);
         }
 
-        private ICollection<string> GetFiles(string directory)
+        private static IEnumerable<string> GetFiles(string directory)
         {
             var files = new List<string>();
 
