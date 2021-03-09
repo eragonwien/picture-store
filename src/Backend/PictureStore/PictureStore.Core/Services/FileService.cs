@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
@@ -10,6 +11,7 @@ using PictureStore.Core.Models;
 using PictureStore.Core.Models.AppSettings;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Jpeg;
+using SixLabors.ImageSharp.Processing;
 
 namespace PictureStore.Core.Services
 {
@@ -82,6 +84,12 @@ namespace PictureStore.Core.Services
 
                     Directory.CreateDirectory(destinationDirectory);
                     File.Move(sourceFilePath, destinationFilePath);
+
+                    var thumbnailDirectory = Path.Combine(downloadAppSettings.Directory, "thumbnails", creationTime.ToString(fileShortDateFormat));
+                    var thumbnailFilePath = destinationFilePath.Replace(destinationDirectory, thumbnailDirectory);
+
+                    Directory.CreateDirectory(thumbnailDirectory);
+                    await CreateThumbnailImageAsync(destinationFilePath, thumbnailFilePath, cancellationToken);
                 }
                 catch (Exception ex)
                 {
@@ -182,6 +190,20 @@ namespace PictureStore.Core.Services
 
             File.SetCreationTime(filePath, creationTime);
             File.SetLastWriteTime(filePath, creationTime);
+        }
+
+        private async Task CreateThumbnailImageAsync(string filePath, string thumbnailFilePath, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            var thumbnail = await Image.LoadAsync(filePath, cancellationToken);
+            thumbnail.Mutate(x => x.Resize(new ResizeOptions
+            {
+                Size = new Size(250, 250),
+                Mode = ResizeMode.Crop
+            }));
+
+            await thumbnail.SaveAsJpegAsync(thumbnailFilePath, cancellationToken);
         }
     }
 }
