@@ -5,18 +5,18 @@ namespace PictureStore.Core.Models
 {
     public class FileListingModel
     {
-        public string RootDirectory { get; set; }
+        public string Path { get; set; }
 
         public List<DownloadFolderContent> Directories { get; set; } = new();
 
-        public FileListingModel(string rootDirectory)
+        public FileListingModel(string path)
         {
-            RootDirectory = rootDirectory;
+            Path = path;
         }
 
         public FileListingModel ListFiles(string folder)
         {
-            foreach (var dirPath in Directory.GetDirectories(RootDirectory))
+            foreach (var dirPath in Directory.GetDirectories(Path))
             {
                 if (!string.IsNullOrWhiteSpace(folder) && dirPath != folder)
                     continue;

@@ -28,9 +28,39 @@ namespace PictureStore.Core.Services
             uploadAppSettings = uploadAppSettingsOptions.Value;
         }
 
-        public Task DownloadAsync(string id)
+        public async Task<DownloadFileModel> DownloadAsync(
+            string folder, 
+            string filename,
+            CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            cancellationToken.ThrowIfCancellationRequested();
+
+            var result = new DownloadFileModel();
+
+            try
+            {
+                if (!MimeTypes.TryGetMimeType(filename, out var contentType))
+                    filename = $"{filename}.jpeg";
+                
+                var path = Path.Combine(downloadAppSettings.Directory, folder, filename);
+
+                if (!File.Exists(path))
+                {
+                    result.Message = $"File at '{path}' not found";
+                    return result;
+                }
+
+                result.Content = await File.ReadAllBytesAsync(path, cancellationToken);
+                result.ContentType = MimeTypes.GetMimeType(filename);
+                result.Succeed = true;
+            }
+            catch (Exception ex)
+            {
+                result.Succeed = false;
+                result.Message = ex.Message;
+            }
+
+            return result;
         }
 
         public async Task MoveToDownloadFolderAsync(CancellationToken cancellationToken)

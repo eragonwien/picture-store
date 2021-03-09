@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -58,10 +59,14 @@ namespace PictureStore.Web.Api.Controllers
         }
 
         [HttpGet]
-        [Route("download/{path}")]
-        public async Task DownloadFile([FromRoute] string path)
+        [Route("download/{folder}/{filename}")]
+        public async Task<FileContentResult> DownloadFile([FromRoute] string folder, [FromRoute] string filename, CancellationToken cancellationToken)
         {
-            await fileService.DownloadAsync(path);
+            var result = await fileService.DownloadAsync(folder, filename, cancellationToken);
+
+            if (result == null) return null;
+
+            return File(result.Content, result.ContentType);
         }
     }
 }
