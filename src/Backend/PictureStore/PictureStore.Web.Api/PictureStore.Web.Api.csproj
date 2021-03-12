@@ -28,8 +28,7 @@
 	</PropertyGroup>
 
 	<Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-		<Copy SourceFiles="Docker/$(Configuration).Dockerfile"
-			  DestinationFiles="Dockerfile"
-			  Condition="Exists(Docker/$(Configuration).Dockerfile)" />
+		<Copy SourceFiles="Docker/$(Configuration).Dockerfile" DestinationFiles="Dockerfile" Condition="Exists('Docker/$(Configuration).Dockerfile')" />
+		<Copy SourceFiles="Docker/Default.Dockerfile" DestinationFiles="Dockerfile" Condition="!Exists('Docker/$(Configuration).Dockerfile')" />
 	</Target>
 </Project>
