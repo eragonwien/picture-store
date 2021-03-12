@@ -41,7 +41,7 @@ namespace PictureStore.Web.Api.Controllers
         [Route("move")]
         public async Task MoveToDownloadFolder(CancellationToken cancellationToken)
         {
-            await fileService.MoveToDownloadFolderAsync(cancellationToken);
+            await fileService.TransferFileToDownloadFolderAsync(cancellationToken);
         }
 
         [HttpGet]

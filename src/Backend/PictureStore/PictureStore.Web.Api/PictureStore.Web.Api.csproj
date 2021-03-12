@@ -27,8 +27,21 @@
 		<EnvironmentName>Production</EnvironmentName>
 	</PropertyGroup>
 
-	<Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-		<Copy SourceFiles="Docker/$(Configuration).Dockerfile" DestinationFiles="Dockerfile" Condition="Exists('Docker/$(Configuration).Dockerfile')" />
-		<Copy SourceFiles="Docker/Default.Dockerfile" DestinationFiles="Dockerfile" Condition="!Exists('Docker/$(Configuration).Dockerfile')" />
+	<Target Name="CopyDockerFile" BeforeTargets="PreBuildEvent">
+		<Copy SourceFiles="Docker/$(Configuration).Dockerfile"
+			  DestinationFiles="Dockerfile"
+			  Condition="Exists('Docker/$(Configuration).Dockerfile')" />
+		<Copy SourceFiles="Docker/Default.Dockerfile"
+			  DestinationFiles="Dockerfile"
+			  Condition="!Exists('Docker/$(Configuration).Dockerfile')" />
+	</Target>
+
+	<Target Name="CopyAppSettings" BeforeTargets="PreBuildEvent">
+		<Copy SourceFiles="$(SolutionDir)/Configurations/appsettings.$(Configuration).json"
+			  DestinationFiles="appsettings.json"
+			  Condition="Exists('$(SolutionDir)/Configurations/appsettings.$(Configuration).json')" />
+		<Copy SourceFiles="$(SolutionDir)/Configurations/appsettings.json"
+			  DestinationFiles="appsettings.json"
+			  Condition="!Exists('$(SolutionDir)/Configurations/appsettings.$(Configuration).json')" />
 	</Target>
 </Project>

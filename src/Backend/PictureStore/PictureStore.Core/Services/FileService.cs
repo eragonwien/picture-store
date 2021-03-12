@@ -31,7 +31,7 @@ namespace PictureStore.Core.Services
         }
 
         public async Task<DownloadFileModel> DownloadAsync(
-            string folder, 
+            string folder,
             string filename,
             CancellationToken cancellationToken)
         {
@@ -39,11 +39,14 @@ namespace PictureStore.Core.Services
 
             var result = new DownloadFileModel();
 
+            if (cancellationToken.IsCancellationRequested)
+                return result;
+
             try
             {
                 if (!MimeTypes.TryGetMimeType(filename, out var contentType))
                     filename = $"{filename}.jpeg";
-                
+
                 var path = Path.Combine(downloadAppSettings.Directory, folder, filename);
 
                 if (!File.Exists(path))
@@ -65,9 +68,9 @@ namespace PictureStore.Core.Services
             return result;
         }
 
-        public async Task MoveToDownloadFolderAsync(CancellationToken cancellationToken)
+        public async Task TransferFileToDownloadFolderAsync(CancellationToken cancellationToken)
         {
-            cancellationToken.ThrowIfCancellationRequested();
+            if (cancellationToken.IsCancellationRequested) return;
 
             var uploadFilePaths = Directory.GetFiles(uploadAppSettings.Directory);
 
@@ -104,9 +107,10 @@ namespace PictureStore.Core.Services
 
         public FileListingModel ListFiles(string folder, CancellationToken cancellationToken)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-
             var list = new FileListingModel(downloadAppSettings.Directory);
+
+            if (cancellationToken.IsCancellationRequested)
+                return list;
 
             if (!string.IsNullOrWhiteSpace(folder) && !folder.StartsWith(downloadAppSettings.Directory))
                 folder = Path.Combine(downloadAppSettings.Directory, folder);
@@ -119,9 +123,10 @@ namespace PictureStore.Core.Services
             Stream stream,
             CancellationToken cancellationToken)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-
             var result = new FileUploadPartialResult(inputFileName);
+
+            if (cancellationToken.IsCancellationRequested)
+                return result;
 
             try
             {
@@ -140,14 +145,15 @@ namespace PictureStore.Core.Services
 
         public async Task<IEnumerable<DuplicateFileModel>> ListDuplicatesAsync(CancellationToken cancellationToken)
         {
-            cancellationToken.ThrowIfCancellationRequested();
+            if (cancellationToken.IsCancellationRequested)
+                return Enumerable.Empty<DuplicateFileModel>();
 
             return GetFiles(downloadAppSettings.Directory)
-                .Select(FileDetails.ReadFile)
-                .GroupBy(f => f.FileHash)
-                .Select(g => new DuplicateFileModel(g.Key, g.OrderBy(x => x.FileName).Select(x => x.FileName)))
-                .Where(m => m.HasDuplicate)
-                .ToList();
+            .Select(FileDetails.ReadFile)
+            .GroupBy(f => f.FileHash)
+            .Select(g => new DuplicateFileModel(g.Key, g.OrderBy(x => x.FileName).Select(x => x.FileName)))
+            .Where(m => m.HasDuplicate)
+            .ToList();
         }
 
         private static IEnumerable<string> GetFiles(string directory)
@@ -194,7 +200,7 @@ namespace PictureStore.Core.Services
 
         private async Task CreateThumbnailImageAsync(string filePath, string thumbnailFilePath, CancellationToken cancellationToken)
         {
-            cancellationToken.ThrowIfCancellationRequested();
+            if (cancellationToken.IsCancellationRequested) return;
 
             var thumbnail = await Image.LoadAsync(filePath, cancellationToken);
             thumbnail.Mutate(x => x.Resize(new ResizeOptions

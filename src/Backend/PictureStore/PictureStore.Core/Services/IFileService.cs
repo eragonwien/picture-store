@@ -18,7 +18,7 @@ namespace PictureStore.Core.Services
 
         Task<DownloadFileModel> DownloadAsync(string folder, string filename, CancellationToken cancellationToken);
 
-        Task MoveToDownloadFolderAsync(CancellationToken cancellationToken);
+        Task TransferFileToDownloadFolderAsync(CancellationToken cancellationToken);
 
         Task<IEnumerable<DuplicateFileModel>> ListDuplicatesAsync(CancellationToken cancellationToken);
     }
