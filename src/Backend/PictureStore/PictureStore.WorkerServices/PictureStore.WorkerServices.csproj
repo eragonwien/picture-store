@@ -2,10 +2,12 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
-    <UserSecretsId>dotnet-PictureStore.WorkerServices-EE5E44E2-1632-4204-895A-9350D08F7801</UserSecretsId>
+    <UserSecretsId>dotnet-PictureStore.WorkerServices-A5786232-3E97-4E17-BD6B-ECFB163361CA</UserSecretsId>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.13" />
   </ItemGroup>
 </Project>
