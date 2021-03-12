@@ -11,6 +11,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PictureStore.Infrastructure
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PictureStore.WorkerServices", "PictureStore.WorkerServices\PictureStore.WorkerServices.csproj", "{0CA9F598-C619-47EF-9D9E-FDB0AE02BC4A}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Configurations", "Configurations", "{AC62B81D-CE74-4272-89EE-B095EC60A128}"
+	ProjectSection(SolutionItems) = preProject
+		Configurations\appsettings.Debug.json = Configurations\appsettings.Debug.json
+		Configurations\appsettings.json = Configurations\appsettings.json
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

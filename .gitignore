@@ -4,3 +4,4 @@
 /src/Backend/PictureStore/PictureStore.WorkerServices.FileTransferWorkerService/Dockerfile
 /src/Backend/PictureStore/PictureStore.WorkerServices/Dockerfile
 /src/Backend/PictureStore/PictureStore.WorkerServices/appsettings.json
+/src/Backend/PictureStore/Configurations/appsettings.Debug.json
