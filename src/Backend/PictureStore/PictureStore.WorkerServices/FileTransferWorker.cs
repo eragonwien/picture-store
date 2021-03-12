@@ -1,5 +1,7 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using PictureStore.Core.Models.AppSettings;
 using PictureStore.Core.Services;
 using System;
 using System.Threading;
@@ -9,26 +11,30 @@ namespace PictureStore.WorkerServices
 {
     public class FileTransferWorker : BackgroundService
     {
-        private readonly ILogger<FileTransferWorker> _logger;
-        private readonly IFileService _fileService;
+        private readonly ILogger<FileTransferWorker> logger;
+        private readonly IFileService fileService;
+        private readonly PictureStoreFileTransferAppSettings fileTransferAppSettings;
 
-        public FileTransferWorker(ILogger<FileTransferWorker> logger, IFileService fileService)
+        public FileTransferWorker(ILogger<FileTransferWorker> logger,
+            IFileService fileService,
+            IOptions<PictureStoreFileTransferAppSettings> fileTransferAppSettingsOptions)
         {
-            _logger = logger;
-            _fileService = fileService;
+            this.logger = logger;
+            this.fileService = fileService;
+            fileTransferAppSettings = fileTransferAppSettingsOptions.Value;
         }
 
         protected override async Task ExecuteAsync(CancellationToken cancellationToken)
         {
             while (!cancellationToken.IsCancellationRequested)
             {
-                _logger.LogInformation("FileTransferWorker started at: {time}", DateTimeOffset.Now);
+                logger.LogInformation("FileTransferWorker started at: {time}", DateTimeOffset.Now);
 
-                await _fileService.TransferFileToDownloadFolderAsync(cancellationToken);
+                await fileService.TransferFileToDownloadFolderAsync(cancellationToken);
 
-                _logger.LogInformation("FileTransferWorker completed at: {time}", DateTimeOffset.Now);
-                _logger.LogInformation("FileTransferWorker start again at: {time}", DateTimeOffset.Now.AddSeconds(5));
-                await Task.Delay(TimeSpan.FromSeconds(5), cancellationToken);
+                logger.LogInformation("FileTransferWorker completed at: {time}", DateTimeOffset.Now);
+                logger.LogInformation("FileTransferWorker start again at: {time}", DateTimeOffset.Now.Add(fileTransferAppSettings.Interval));
+                await Task.Delay(fileTransferAppSettings.Interval, cancellationToken);
             }
         }
     }

@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using PictureStore.Core.Models.AppSettings;
 using PictureStore.Core.Services;
 
 namespace PictureStore.WorkerServices
@@ -17,6 +18,10 @@ namespace PictureStore.WorkerServices
                 {
                     services.AddHostedService<FileTransferWorker>();
                     services.AddSingleton<IFileService, FileService>();
+
+                    services.Configure<PictureStoreUploadAppSettings>(hostContext.Configuration.GetSection(PictureStoreUploadAppSettings.Section));
+                    services.Configure<PictureStoreDownloadAppSettings>(hostContext.Configuration.GetSection(PictureStoreDownloadAppSettings.Section));
+                    services.Configure<PictureStoreFileTransferAppSettings>(hostContext.Configuration.GetSection(PictureStoreFileTransferAppSettings.Section));
                 });
     }
 }
