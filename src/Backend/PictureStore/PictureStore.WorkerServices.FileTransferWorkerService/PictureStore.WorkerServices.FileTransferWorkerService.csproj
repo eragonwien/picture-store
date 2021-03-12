@@ -1,8 +1,8 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Worker">
 
 	<PropertyGroup>
 		<TargetFramework>net5.0</TargetFramework>
-		<UserSecretsId>99daf391-a257-4415-b0ac-17704cb4527d</UserSecretsId>
+		<UserSecretsId>dotnet-PictureStore.WorkerServices.FileTransferWorkerService-057D1028-036F-4600-AE36-5D3254E37A5D</UserSecretsId>
 		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
 		<NoWarn>CS1998</NoWarn>
 		<LangVersion>latest</LangVersion>
@@ -11,12 +11,8 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
 		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.13" />
-		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.1.0" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<ProjectReference Include="..\PictureStore.Core\PictureStore.Core.csproj" />
 	</ItemGroup>
 
 	<PropertyGroup Condition=" '$(Configuration)' == '' Or '$(Configuration)' == 'Debug'">
@@ -28,8 +24,7 @@
 	</PropertyGroup>
 
 	<Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-		<Copy SourceFiles="Docker/$(Configuration).Dockerfile"
-			  DestinationFiles="Dockerfile"
-			  Condition="Exists(Docker/$(Configuration).Dockerfile)" />
+		<Copy SourceFiles="Docker/$(Configuration).Dockerfile" DestinationFiles="Dockerfile" Condition="Exists('Docker/$(Configuration).Dockerfile')" />
+		<Copy SourceFiles="Docker/Default.Dockerfile" DestinationFiles="Dockerfile" Condition="!Exists('Docker/$(Configuration).Dockerfile')" />
 	</Target>
 </Project>
