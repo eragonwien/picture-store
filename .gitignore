@@ -1,3 +1,4 @@
 /src/Backend/PictureStore/_ReSharper.Caches
 /src/Backend/PictureStore/PictureStore.Web.Api/temp
 /src/Backend/PictureStore/PictureStore.Web.Api/Dockerfile
+/src/Backend/PictureStore/PictureStore.WorkerServices.FileTransferWorkerService/Dockerfile
