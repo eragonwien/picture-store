@@ -3,11 +3,12 @@
 	<PropertyGroup>
 		<TargetFramework>net5.0</TargetFramework>
 		<UserSecretsId>dotnet-PictureStore.WorkerServices-A5786232-3E97-4E17-BD6B-ECFB163361CA</UserSecretsId>
-		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
 		<NoWarn>CS1998</NoWarn>
 		<LangVersion>latest</LangVersion>
 		<LanguageTargets>$(MSBuildBinPath)\Microsoft.CSharp.targets</LanguageTargets>
 		<Configurations>Debug;Release;RaspberryPiRelease</Configurations>
+		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+		<DockerfileTag>eragonwien/picturestore.workerservices</DockerfileTag>
 	</PropertyGroup>
 
 	<ItemGroup>

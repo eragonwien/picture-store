@@ -1,10 +1,10 @@
 # Pulls then deletes current web api container
-docker pull eragonwien/picturestorewebapi:latest
-docker stop picturestorewebapi-container
-docker rm picturestorewebapi-container
+docker pull eragonwien/picturestore.workerservices:latest
+docker stop picturestore.workerservices-container
+docker rm picturestore.workerservices-container
 
 # Runs new web api container
-docker run --name=picturestorewebapi-container 
+docker run --name=picturestore.workerservices-container 
 	--restart=always 
 	-p 5000:80 
 	-v /home/pi/picture-store/upload_files:/upload_files 
