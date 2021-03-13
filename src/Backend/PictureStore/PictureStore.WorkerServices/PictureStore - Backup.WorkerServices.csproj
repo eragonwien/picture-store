@@ -29,9 +29,4 @@
 		<Copy SourceFiles="$(SolutionDir)/Configurations/appsettings.$(Configuration).json" DestinationFiles="appsettings.json" Condition="Exists('$(SolutionDir)/Configurations/appsettings.$(Configuration).json')" />
 		<Copy SourceFiles="$(SolutionDir)/Configurations/appsettings.json" DestinationFiles="appsettings.json" Condition="!Exists('$(SolutionDir)/Configurations/appsettings.$(Configuration).json')" />
 	</Target>
-
-	<Target Name="PushToDockerHub" AfterTargets="PostBuildEvent" Condition="Exists('Docker/$(Configuration).Dockerfile') AND $(Configuration) != 'Development'">
-		<Message Text="Push docker image to Docker hub" Importance="high" />
-		<Exec Command="echo push to dockerhub" />
-	</Target>
 </Project>
