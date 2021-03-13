@@ -8,7 +8,7 @@
 		<LanguageTargets>$(MSBuildBinPath)\Microsoft.CSharp.targets</LanguageTargets>
 		<Configurations>Debug;Release;RaspberryPiRelease</Configurations>
 		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-		<DockerfileTag>eragonwien/picturestore.workerservices</DockerfileTag>
+		<DockerfileTag>picturestore.workerservices</DockerfileTag>
 	</PropertyGroup>
 
 	<ItemGroup>

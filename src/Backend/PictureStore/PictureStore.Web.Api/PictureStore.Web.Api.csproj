@@ -3,11 +3,12 @@
 	<PropertyGroup>
 		<TargetFramework>net5.0</TargetFramework>
 		<UserSecretsId>99daf391-a257-4415-b0ac-17704cb4527d</UserSecretsId>
-		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
 		<NoWarn>CS1998</NoWarn>
 		<LangVersion>latest</LangVersion>
 		<LanguageTargets>$(MSBuildBinPath)\Microsoft.CSharp.targets</LanguageTargets>
 		<Configurations>Debug;Release;RaspberryPiRelease</Configurations>
+		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+		<DockerfileTag>picturestore.web.api</DockerfileTag>
 	</PropertyGroup>
 
 	<ItemGroup>
