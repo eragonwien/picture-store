@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace PictureStore.Core.Models
 {
@@ -16,13 +17,8 @@ namespace PictureStore.Core.Models
 
         public FileListingModel ListFiles(string folder)
         {
-            foreach (var dirPath in Directory.GetDirectories(Path))
-            {
-                if (!string.IsNullOrWhiteSpace(folder) && dirPath != folder)
-                    continue;
-
-                Directories.Add(new DownloadFolderContent(dirPath));
-            }
+            folder ??= string.Empty;
+            Directories.AddRange(Directory.GetDirectories(Path, folder, SearchOption.TopDirectoryOnly).Select(d => new DownloadFolderContent(d)));
 
             return this;
         }

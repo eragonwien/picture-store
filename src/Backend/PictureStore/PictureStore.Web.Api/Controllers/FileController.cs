@@ -45,6 +45,13 @@ namespace PictureStore.Web.Api.Controllers
         }
 
         [HttpGet]
+        [Route("folders")]
+        public IEnumerable<string> ListFolders([FromQuery] string folder)
+        {
+            return fileService.ListFolders(folder);
+        }
+
+        [HttpGet]
         [Route("list")]
         public FileListingModel ListFile([FromQuery] string folder, CancellationToken cancellationToken)
         {

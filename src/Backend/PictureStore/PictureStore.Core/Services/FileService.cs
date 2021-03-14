@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
@@ -211,6 +212,11 @@ namespace PictureStore.Core.Services
             }));
 
             await thumbnail.SaveAsJpegAsync(thumbnailFilePath, cancellationToken);
+        }
+
+        public IEnumerable<string> ListFolders(string folder)
+        {
+            return Directory.GetDirectories(downloadAppSettings.Directory, folder ?? string.Empty, SearchOption.TopDirectoryOnly).OrderByDescending(x => x);
         }
     }
 }
