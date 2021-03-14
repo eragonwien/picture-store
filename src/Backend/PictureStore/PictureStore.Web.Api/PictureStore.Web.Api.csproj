@@ -45,4 +45,12 @@
 			  DestinationFiles="appsettings.json"
 			  Condition="!Exists('$(SolutionDir)/Configurations/appsettings.$(Configuration).json')" />
 	</Target>
+
+	<Target Name="PushToDockerHub"
+			AfterTargets="PostBuildEvent"
+			Condition="Exists('Docker/$(Configuration).Dockerfile') AND $(Configuration) != 'Development'">
+		<Message Text="Push docker image to Docker hub" Importance="high" />
+		<Exec Command="docker build --tag eragonwien/picturestore.workerservices:latest -f Dockerfile .." />
+		<Exec Command="docker push eragonwien/picturestore.workerservices:latest" />
+	</Target>
 </Project>
