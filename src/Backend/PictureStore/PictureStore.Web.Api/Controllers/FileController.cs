@@ -71,8 +71,6 @@ namespace PictureStore.Web.Api.Controllers
         {
             var result = await fileService.DownloadAsync(folder, filename, cancellationToken);
 
-            if (result == null) return null;
-
             return File(result.Content, result.ContentType);
         }
     }

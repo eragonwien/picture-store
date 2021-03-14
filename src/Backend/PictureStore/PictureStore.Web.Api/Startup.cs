@@ -1,3 +1,4 @@
+using System.IO;
 using System.Net;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
@@ -8,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using PictureStore.Core.Exceptions;
 using PictureStore.Web.Api.Extensions;
 using PictureStore.Web.Api.Models;
 
@@ -73,7 +75,18 @@ namespace PictureStore.Web.Api
 
                 if (errorContext is null) return;
 
-                context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                var statusCode = HttpStatusCode.InternalServerError;
+
+                switch (errorContext.Error)
+                {
+                    case FileNotFoundException fileNotFoundException:
+                        statusCode = HttpStatusCode.BadRequest;
+                        break;
+                    default:
+                        break;
+                }
+
+                context.Response.StatusCode = (int)statusCode;
                 context.Response.ContentType = "application/json";
 
                 var result = new ErrorResponseModel(errorContext.Error, env.IsDevelopment());

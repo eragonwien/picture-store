@@ -8,6 +8,7 @@ using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
+using PictureStore.Core.Exceptions;
 using PictureStore.Core.Models;
 using PictureStore.Core.Models.AppSettings;
 using SixLabors.ImageSharp;
@@ -43,28 +44,16 @@ namespace PictureStore.Core.Services
             if (cancellationToken.IsCancellationRequested)
                 return result;
 
-            try
-            {
-                if (!MimeTypes.TryGetMimeType(filename, out var contentType))
-                    filename = $"{filename}.jpeg";
+            if (!MimeTypes.TryGetMimeType(filename, out var contentType))
+                filename = $"{filename}.jpeg";
 
-                var path = Path.Combine(downloadAppSettings.Directory, folder, filename);
+            var path = Path.Combine(downloadAppSettings.Directory, folder, filename);
 
-                if (!File.Exists(path))
-                {
-                    result.Message = $"File at '{path}' not found";
-                    return result;
-                }
+            if (!File.Exists(path))
+                throw new FileNotFoundException($"File {filename} not found at {path}");
 
-                result.Content = await File.ReadAllBytesAsync(path, cancellationToken);
-                result.ContentType = MimeTypes.GetMimeType(filename);
-                result.Succeed = true;
-            }
-            catch (Exception ex)
-            {
-                result.Succeed = false;
-                result.Message = ex.Message;
-            }
+            result.Content = await File.ReadAllBytesAsync(path, cancellationToken);
+            result.ContentType = MimeTypes.GetMimeType(filename);
 
             return result;
         }
