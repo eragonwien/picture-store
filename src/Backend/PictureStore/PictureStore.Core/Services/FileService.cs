@@ -81,6 +81,7 @@ namespace PictureStore.Core.Services
                 string destinationFilePath = null;
                 try
                 {
+                    // Moves files from upload folder to download folder
                     var creationTime = File.GetCreationTime(sourceFilePath);
                     var destinationDirectory = Path.Combine(downloadAppSettings.Directory, creationTime.ToString(fileShortDateFormat));
                     destinationFilePath = sourceFilePath.Replace(uploadAppSettings.Directory, destinationDirectory);
@@ -88,6 +89,7 @@ namespace PictureStore.Core.Services
                     Directory.CreateDirectory(destinationDirectory);
                     File.Move(sourceFilePath, destinationFilePath);
 
+                    // Adds thumbnail 
                     var thumbnailDirectory = Path.Combine(downloadAppSettings.Directory, "thumbnails", creationTime.ToString(fileShortDateFormat));
                     var thumbnailFilePath = destinationFilePath.Replace(destinationDirectory, thumbnailDirectory);
 
@@ -98,7 +100,6 @@ namespace PictureStore.Core.Services
                 {
                     errors.Add(new MovingFileError(sourceFilePath, destinationFilePath, ex.Message));
                 }
-
             }
 
             if (errors.Any())
