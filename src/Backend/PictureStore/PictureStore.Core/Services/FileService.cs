@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
-using PictureStore.Core.Exceptions;
 using PictureStore.Core.Models;
 using PictureStore.Core.Models.AppSettings;
 using SixLabors.ImageSharp;

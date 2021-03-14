@@ -1,7 +1,4 @@
-﻿using PictureStore.Core.Exceptions;
-using System;
-
-namespace PictureStore.Core.Models
+﻿namespace PictureStore.Core.Models
 {
     public class DownloadFileModel
     {

@@ -50,7 +50,7 @@
 			AfterTargets="PostBuildEvent"
 			Condition="Exists('Docker/$(Configuration).Dockerfile') AND $(Configuration) != 'Development'">
 		<Message Text="Push docker image to Docker hub" Importance="high" />
-		<Exec Command="docker build --tag eragonwien/picturestore.workerservices:latest -f Dockerfile .." />
-		<Exec Command="docker push eragonwien/picturestore.workerservices:latest" />
+		<Exec Command="docker build --tag eragonwien/picturestore.web.api:latest -f Dockerfile .." />
+		<Exec Command="docker push eragonwien/picturestore.web.api:latest" />
 	</Target>
 </Project>
