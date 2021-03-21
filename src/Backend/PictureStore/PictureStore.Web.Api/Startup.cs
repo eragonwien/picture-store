@@ -11,86 +11,90 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using PictureStore.Web.Api.Extensions;
 using PictureStore.Web.Api.Models;
+using PictureStore.Core.Exceptions;
 
 namespace PictureStore.Web.Api
 {
-    public class Startup
-    {
-        public Startup(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
+   public class Startup
+   {
+      public Startup(IConfiguration configuration)
+      {
+         Configuration = configuration;
+      }
 
-        public IConfiguration Configuration { get; }
+      public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services)
-        {
-            services
-                .AddCoreServices()
-                .AddAppSettings(Configuration);
+      // This method gets called by the runtime. Use this method to add services to the container.
+      public void ConfigureServices(IServiceCollection services)
+      {
+         services
+             .AddCoreServices()
+             .AddAppSettings(Configuration);
 
-            services.AddControllers();
-            services.AddSwaggerGen(c =>
+         services.AddControllers();
+         services.AddSwaggerGen(c =>
+         {
+            c.SwaggerDoc("v1", new OpenApiInfo { Title = "PictureStore.Web.Api", Version = "v1" });
+         });
+      }
+
+      // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+      public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+      {
+         if (env.IsDevelopment())
+         {
+            app.UseSwagger();
+            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "PictureStore.Web.Api v1"));
+            app.UseHttpsRedirection();
+         }
+         else
+         {
+            app.UseForwardedHeaders(new ForwardedHeadersOptions
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "PictureStore.Web.Api", Version = "v1" });
+               ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
             });
-        }
+         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-        {
-            if (env.IsDevelopment())
+         app.UseExceptionHandler(a => ConfigureExceptionHandler(a, env));
+
+         app.UseRouting();
+
+         app.UseAuthorization();
+
+         app.UseEndpoints(endpoints =>
+         {
+            endpoints.MapControllers();
+         });
+      }
+
+      private void ConfigureExceptionHandler(IApplicationBuilder app, IHostEnvironment env)
+      {
+         app.Run(async context =>
+         {
+            var errorContext = context.Features.Get<IExceptionHandlerPathFeature>();
+
+            if (errorContext is null) return;
+
+            var statusCode = HttpStatusCode.InternalServerError;
+
+            switch (errorContext.Error)
             {
-                app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "PictureStore.Web.Api v1"));
-                app.UseHttpsRedirection();
+               case UploadFileEmptyException uploadFileEmptyException:
+                  statusCode = HttpStatusCode.BadRequest;
+                  break;
+               case FileNotFoundException fileNotFoundException:
+                  statusCode = HttpStatusCode.NotFound;
+                  break;
+               default:
+                  break;
             }
-            else
-            {
-                app.UseForwardedHeaders(new ForwardedHeadersOptions
-                {
-                    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
-                });
-            }
 
-            app.UseExceptionHandler(a => ConfigureExceptionHandler(a, env));
+            context.Response.StatusCode = (int)statusCode;
+            context.Response.ContentType = "application/json";
 
-            app.UseRouting();
-
-            app.UseAuthorization();
-
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-            });
-        }
-
-        private void ConfigureExceptionHandler(IApplicationBuilder app, IHostEnvironment env)
-        {
-            app.Run(async context =>
-            {
-                var errorContext = context.Features.Get<IExceptionHandlerPathFeature>();
-
-                if (errorContext is null) return;
-
-                var statusCode = HttpStatusCode.InternalServerError;
-
-                switch (errorContext.Error)
-                {
-                    case FileNotFoundException fileNotFoundException:
-                        statusCode = HttpStatusCode.BadRequest;
-                        break;
-                    default:
-                        break;
-                }
-
-                context.Response.StatusCode = (int)statusCode;
-                context.Response.ContentType = "application/json";
-
-                var result = new ErrorResponseModel(errorContext.Error, env.IsDevelopment());
-                await context.Response.WriteAsJsonAsync(result);
-            });
-        }
-    }
+            var result = new ErrorResponseModel(errorContext.Error, env.IsDevelopment());
+            await context.Response.WriteAsJsonAsync(result);
+         });
+      }
+   }
 }

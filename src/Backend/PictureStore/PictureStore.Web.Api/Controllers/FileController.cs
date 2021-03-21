@@ -22,12 +22,12 @@ namespace PictureStore.Web.Api.Controllers
 
       [HttpPost]
       [Route("")]
-      public async Task<FileUploadResult> UploadFile(IFormFile file, CancellationToken cancellationToken)
+      public async Task UploadFile(IFormFile file, CancellationToken cancellationToken)
       {
          ThrowIfFileIsEmpty(file);
 
          await using var fileStream = file.OpenReadStream();
-         return await fileService.UploadAsync(file.FileName, fileStream, cancellationToken);
+         await fileService.UploadAsync(file.FileName, fileStream, cancellationToken);
       }
 
       [HttpPost]

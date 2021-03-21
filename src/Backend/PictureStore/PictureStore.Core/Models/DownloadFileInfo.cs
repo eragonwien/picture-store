@@ -20,7 +20,7 @@ namespace PictureStore.Core.Models
          FilePath = path;
          FileName = Path.GetFileName(path);
          FileNameWithoutExtension = Path.GetFileNameWithoutExtension(path);
-         MimeType = MimeTypes.GetMimeType(path);
+         MimeType = "image/jpeg";
          Folder = path.GetParentDirectory();
       }
    }

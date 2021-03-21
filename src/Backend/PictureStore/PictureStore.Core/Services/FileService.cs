@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
+using PictureStore.Core.Exceptions;
 using PictureStore.Core.Models;
 using PictureStore.Core.Models.AppSettings;
 using SixLabors.ImageSharp;
@@ -40,8 +41,7 @@ namespace PictureStore.Core.Services
          if (cancellationToken.IsCancellationRequested)
             return result;
 
-         if (!MimeTypes.TryGetMimeType(filename, out var contentType))
-            filename = $"{filename}.jpeg";
+         filename = Path.ChangeExtension(filename, "jpeg");
 
          var path = Path.Combine(downloadAppSettings.Directory, folder, filename);
 
@@ -49,24 +49,24 @@ namespace PictureStore.Core.Services
             throw new FileNotFoundException($"File {filename} not found at {path}");
 
          result.Content = await File.ReadAllBytesAsync(path, cancellationToken);
-         result.ContentType = MimeTypes.GetMimeType(filename);
+         result.ContentType = "image/jpeg";
 
          return result;
       }
 
       public async Task TransferFileToDownloadFolderAsync(CancellationToken cancellationToken)
       {
-         if (cancellationToken.IsCancellationRequested) return;
+         cancellationToken.ThrowIfCancellationRequested();
 
          var uploadFilePaths = Directory.GetFiles(uploadAppSettings.Directory);
-
-         var errors = new List<MovingFileError>();
 
          foreach (var sourceFilePath in uploadFilePaths)
          {
             string destinationFilePath = null;
             try
             {
+               cancellationToken.ThrowIfCancellationRequested();
+
                // Moves files from upload folder to download folder
                var creationTime = File.GetCreationTime(sourceFilePath);
                var destinationDirectory = Path.Combine(downloadAppSettings.Directory, creationTime.ToString(fileShortDateFormat));
@@ -84,20 +84,13 @@ namespace PictureStore.Core.Services
             }
             catch (Exception ex)
             {
-               errors.Add(new MovingFileError(sourceFilePath, destinationFilePath, ex.Message));
+               throw new MoveToDownloadFolderException(ex);
             }
          }
-
-         if (errors.Any())
-            throw new MoveToDownloadFolderException(errors);
       }
-
       public FileListingModel ListFiles(string folder, CancellationToken cancellationToken)
       {
          var list = new FileListingModel(downloadAppSettings.Directory);
-
-         if (cancellationToken.IsCancellationRequested)
-            return list;
 
          if (!string.IsNullOrWhiteSpace(folder) && !folder.StartsWith(downloadAppSettings.Directory))
             folder = Path.Combine(downloadAppSettings.Directory, folder);
@@ -105,34 +98,27 @@ namespace PictureStore.Core.Services
          return list.ListFiles(folder);
       }
 
-      public async Task<FileUploadResult> UploadAsync(
+      public async Task UploadAsync(
           string inputFileName,
           Stream stream,
           CancellationToken cancellationToken)
       {
-         var result = new FileUploadResult(inputFileName);
-
          cancellationToken.ThrowIfCancellationRequested();
 
          await using var imageStream = await LoadImageStreamAsync(stream, cancellationToken);
          await SaveImageAsync(imageStream, cancellationToken);
-
-         result.Succeed = true;
-
-         return result;
       }
 
       public async Task<IEnumerable<DuplicateFileModel>> ListDuplicatesAsync(CancellationToken cancellationToken)
       {
-         if (cancellationToken.IsCancellationRequested)
-            return Enumerable.Empty<DuplicateFileModel>();
+         cancellationToken.ThrowIfCancellationRequested();
 
          return GetFiles(downloadAppSettings.Directory)
-         .Select(FileDetails.ReadFile)
-         .GroupBy(f => f.FileHash)
-         .Select(g => new DuplicateFileModel(g.Key, g.OrderBy(x => x.FileName).Select(x => x.FileName)))
-         .Where(m => m.HasDuplicate)
-         .ToList();
+            .Select(FileDetails.ReadFile)
+            .GroupBy(f => f.FileHash)
+            .Select(g => new DuplicateFileModel(g.Key, g.OrderBy(x => x.FileName).Select(x => x.FileName)))
+            .Where(m => m.HasDuplicate)
+            .ToList();
       }
 
       private static IEnumerable<string> GetFiles(string directory)
@@ -166,6 +152,8 @@ namespace PictureStore.Core.Services
 
       private async Task SaveImageAsync(Stream imageStream, CancellationToken cancellationToken)
       {
+         cancellationToken.ThrowIfCancellationRequested();
+
          var creationTime = DateTime.Now;
          var filename = $"{creationTime.ToString(fileLongDateFormat)}.jpeg";
          var filePath = Path.Combine(uploadAppSettings.Directory, filename);
@@ -181,7 +169,7 @@ namespace PictureStore.Core.Services
 
       private async Task CreateThumbnailImageAsync(string filePath, string thumbnailFilePath, CancellationToken cancellationToken)
       {
-         if (cancellationToken.IsCancellationRequested) return;
+         cancellationToken.ThrowIfCancellationRequested();
 
          var thumbnail = await Image.LoadAsync(filePath, cancellationToken);
          thumbnail.Mutate(x => x.Resize(new ResizeOptions
