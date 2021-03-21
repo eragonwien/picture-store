@@ -29,26 +29,16 @@
 	</PropertyGroup>
 
 	<Target Name="CopyDockerFile" BeforeTargets="PreBuildEvent">
-		<Copy SourceFiles="Docker/$(Configuration).Dockerfile"
-			  DestinationFiles="Dockerfile"
-			  Condition="Exists('Docker/$(Configuration).Dockerfile')" />
-		<Copy SourceFiles="Docker/Default.Dockerfile"
-			  DestinationFiles="Dockerfile"
-			  Condition="!Exists('Docker/$(Configuration).Dockerfile')" />
+		<Copy SourceFiles="Docker/$(Configuration).Dockerfile" DestinationFiles="Dockerfile" Condition="Exists('Docker/$(Configuration).Dockerfile')" />
+		<Copy SourceFiles="Docker/Default.Dockerfile" DestinationFiles="Dockerfile" Condition="!Exists('Docker/$(Configuration).Dockerfile')" />
 	</Target>
 
 	<Target Name="CopyAppSettings" BeforeTargets="PreBuildEvent">
-		<Copy SourceFiles="$(SolutionDir)/Configurations/appsettings.$(Configuration).json"
-			  DestinationFiles="appsettings.json"
-			  Condition="Exists('$(SolutionDir)/Configurations/appsettings.$(Configuration).json')" />
-		<Copy SourceFiles="$(SolutionDir)/Configurations/appsettings.json"
-			  DestinationFiles="appsettings.json"
-			  Condition="!Exists('$(SolutionDir)/Configurations/appsettings.$(Configuration).json')" />
+		<Copy SourceFiles="$(SolutionDir)/Configurations/appsettings.$(Configuration).json" DestinationFiles="appsettings.json" Condition="Exists('$(SolutionDir)/Configurations/appsettings.$(Configuration).json')" />
+		<Copy SourceFiles="$(SolutionDir)/Configurations/appsettings.json" DestinationFiles="appsettings.json" Condition="!Exists('$(SolutionDir)/Configurations/appsettings.$(Configuration).json')" />
 	</Target>
 
-	<Target Name="PushToDockerHub"
-			AfterTargets="PostBuildEvent"
-			Condition="Exists('Docker/$(Configuration).Dockerfile') AND $(Configuration) != 'Development'">
+	<Target Name="PushToDockerHub" AfterTargets="PostBuildEvent" Condition="Exists('Docker/$(Configuration).Dockerfile') AND $(Configuration) != 'Development'">
 		<Message Text="Push docker image to Docker hub" Importance="high" />
 		<Exec Command="docker build --tag eragonwien/picturestore.web.api:latest -f Dockerfile .." />
 		<Exec Command="docker push eragonwien/picturestore.web.api:latest" />

@@ -1,42 +1,24 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace PictureStore.Core.Models
 {
     public class FileUploadResult
     {
-        public int TotalCount { get; set; }
-
-        public int SuccessCount { get; set; }
-
-        public List<FileUploadError> Errors { get; set; } = new();
-
-        public FileUploadResult Add(FileUploadPartialResult partialResult)
+        public FileUploadResult(string fileName)
         {
-            if (partialResult is null) return this;
-
-            if (partialResult.Succeed)
-                AddSuccessResult(partialResult);
-            else
-                AddErrors(partialResult);
-
-            return this;
+            FileName = fileName;
         }
 
-        private void AddSuccessResult(FileUploadPartialResult partialResult)
+        public bool Succeed { get; set; }
+
+        public string FileName { get; set; }
+
+        public string Message { get; set; }
+
+        public void Error(Exception exception)
         {
-            if (partialResult is null) return;
-
-            TotalCount++;
-            SuccessCount++;
-        }
-
-        private void AddErrors(FileUploadPartialResult partialResult)
-        {
-            if (partialResult is null) return;
-
-            TotalCount++;
-            Errors.Add(new FileUploadError(partialResult.FileName, partialResult.Message));
+            Succeed = false;
+            Message = exception?.Message;
         }
     }
 }

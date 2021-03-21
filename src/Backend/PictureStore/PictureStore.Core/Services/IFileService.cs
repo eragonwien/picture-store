@@ -9,7 +9,7 @@ namespace PictureStore.Core.Services
 {
     public interface IFileService
     {
-        Task<FileUploadPartialResult> UploadAsync(
+        Task<FileUploadResult> UploadAsync(
             string inputFileName,
             Stream stream,
             CancellationToken cancellationToken);
