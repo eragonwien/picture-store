@@ -1,7 +1,4 @@
 ﻿using Newtonsoft.Json;
-using PictureStore.Core.Exceptions;
-using System;
-using System.IO;
 
 namespace PictureStore.Web.Api.Models
 {
