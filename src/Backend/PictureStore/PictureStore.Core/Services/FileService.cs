@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
+using MimeMapping;
 using PictureStore.Core.Exceptions;
 using PictureStore.Core.Models;
 using PictureStore.Core.Models.AppSettings;
@@ -49,7 +50,7 @@ namespace PictureStore.Core.Services
             throw new FileNotFoundException($"File {filename} not found at {path}");
 
          result.Content = await File.ReadAllBytesAsync(path, cancellationToken);
-         result.ContentType = "image/jpeg";
+         result.ContentType = MimeUtility.GetMimeMapping(path);
 
          return result;
       }

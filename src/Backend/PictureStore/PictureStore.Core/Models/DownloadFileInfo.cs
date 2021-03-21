@@ -1,5 +1,6 @@
 ﻿using PictureStore.Core.Extensions;
 using System.IO;
+using MimeMapping;
 
 namespace PictureStore.Core.Models
 {
@@ -20,7 +21,7 @@ namespace PictureStore.Core.Models
          FilePath = path;
          FileName = Path.GetFileName(path);
          FileNameWithoutExtension = Path.GetFileNameWithoutExtension(path);
-         MimeType = "image/jpeg";
+         MimeType = MimeUtility.GetMimeMapping(FileName);
          Folder = path.GetParentDirectory();
       }
    }
