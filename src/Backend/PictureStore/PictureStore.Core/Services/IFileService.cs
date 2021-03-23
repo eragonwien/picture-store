@@ -14,14 +14,12 @@ namespace PictureStore.Core.Services
             Stream stream,
             CancellationToken cancellationToken);
 
-        FileListingModel ListFiles(string folder, CancellationToken cancellationToken);
-
         Task<DownloadFileModel> DownloadAsync(string folder, string filename, CancellationToken cancellationToken);
 
         Task TransferFileToDownloadFolderAsync(CancellationToken cancellationToken);
 
         Task<IEnumerable<DuplicateFileModel>> ListDuplicatesAsync(CancellationToken cancellationToken);
 
-        IEnumerable<string> ListFolders(string folder);
+        Dictionary<string, FilePageInfo> PageFiles(string startFolder, int length);
     }
 }

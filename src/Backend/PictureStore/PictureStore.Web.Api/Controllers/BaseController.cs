@@ -12,5 +12,7 @@ namespace PictureStore.Web.Api.Controllers
          if (file is null || file.Length == 0)
             throw new UploadFileEmptyException();
       }
+
+      protected string AppBaseUrl => $"{Request.Scheme}://{Request.Host}{Request.PathBase}";
    }
 }

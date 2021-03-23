@@ -15,176 +15,186 @@ using SixLabors.ImageSharp.Processing;
 
 namespace PictureStore.Core.Services
 {
-   public class FileService : IFileService
-   {
-      private readonly PictureStoreUploadAppSettings uploadAppSettings;
-      private readonly PictureStoreDownloadAppSettings downloadAppSettings;
+    public class FileService : IFileService
+    {
+        private readonly PictureStoreUploadAppSettings uploadAppSettings;
+        private readonly PictureStoreDownloadAppSettings downloadAppSettings;
 
-      private const string fileLongDateFormat = "yyyyMMddHHmmssfff";
-      private const string fileShortDateFormat = "yyyyMMdd";
+        private const string fileLongDateFormat = "yyyyMMddHHmmssfff";
+        private const string fileShortDateFormat = "yyyyMMdd";
+        private const string thumbnailFolderName = "thumbnails";
 
-      public FileService(IOptions<PictureStoreUploadAppSettings> uploadAppSettingsOptions,
-          IOptions<PictureStoreDownloadAppSettings> downloadAppSettingsOptions)
-      {
-         downloadAppSettings = downloadAppSettingsOptions.Value;
-         uploadAppSettings = uploadAppSettingsOptions.Value;
-      }
+        public FileService(IOptions<PictureStoreUploadAppSettings> uploadAppSettingsOptions,
+            IOptions<PictureStoreDownloadAppSettings> downloadAppSettingsOptions)
+        {
+            downloadAppSettings = downloadAppSettingsOptions.Value;
+            uploadAppSettings = uploadAppSettingsOptions.Value;
+        }
 
-      public async Task<DownloadFileModel> DownloadAsync(
-          string folder,
-          string filename,
-          CancellationToken cancellationToken)
-      {
-         cancellationToken.ThrowIfCancellationRequested();
+        public async Task<DownloadFileModel> DownloadAsync(
+            string folder,
+            string filename,
+            CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
 
-         var result = new DownloadFileModel();
+            var result = new DownloadFileModel();
 
-         if (cancellationToken.IsCancellationRequested)
+            if (cancellationToken.IsCancellationRequested)
+                return result;
+
+            filename = Path.ChangeExtension(filename, "jpeg");
+
+            var path = Path.Combine(downloadAppSettings.Directory, folder, filename);
+
+            if (!File.Exists(path))
+                throw new FileNotFoundException($"File {filename} not found at {path}");
+
+            result.Content = await File.ReadAllBytesAsync(path, cancellationToken);
+            result.ContentType = MimeUtility.GetMimeMapping(path);
+
             return result;
+        }
 
-         filename = Path.ChangeExtension(filename, "jpeg");
+        public async Task TransferFileToDownloadFolderAsync(CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
 
-         var path = Path.Combine(downloadAppSettings.Directory, folder, filename);
+            var uploadFilePaths = Directory.GetFiles(uploadAppSettings.Directory);
 
-         if (!File.Exists(path))
-            throw new FileNotFoundException($"File {filename} not found at {path}");
-
-         result.Content = await File.ReadAllBytesAsync(path, cancellationToken);
-         result.ContentType = MimeUtility.GetMimeMapping(path);
-
-         return result;
-      }
-
-      public async Task TransferFileToDownloadFolderAsync(CancellationToken cancellationToken)
-      {
-         cancellationToken.ThrowIfCancellationRequested();
-
-         var uploadFilePaths = Directory.GetFiles(uploadAppSettings.Directory);
-
-         foreach (var sourceFilePath in uploadFilePaths)
-         {
-            string destinationFilePath = null;
-            try
+            foreach (var sourceFilePath in uploadFilePaths)
             {
-               cancellationToken.ThrowIfCancellationRequested();
+                try
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
 
-               // Moves files from upload folder to download folder
-               var creationTime = File.GetCreationTime(sourceFilePath);
-               var destinationDirectory = Path.Combine(downloadAppSettings.Directory, creationTime.ToString(fileShortDateFormat));
-               destinationFilePath = sourceFilePath.Replace(uploadAppSettings.Directory, destinationDirectory);
+                    // Moves files from upload folder to download folder
+                    var creationTime = File.GetCreationTime(sourceFilePath);
+                    var destinationDirectory = Path.Combine(downloadAppSettings.Directory, creationTime.ToString(fileShortDateFormat));
+                    var destinationFilePath = sourceFilePath.Replace(uploadAppSettings.Directory, destinationDirectory);
 
-               Directory.CreateDirectory(destinationDirectory);
-               File.Move(sourceFilePath, destinationFilePath);
+                    Directory.CreateDirectory(destinationDirectory);
+                    File.Move(sourceFilePath, destinationFilePath);
 
-               // Adds thumbnail 
-               var thumbnailDirectory = Path.Combine(downloadAppSettings.Directory, "thumbnails", creationTime.ToString(fileShortDateFormat));
-               var thumbnailFilePath = destinationFilePath.Replace(destinationDirectory, thumbnailDirectory);
+                    // Adds thumbnail 
+                    var thumbnailDirectory = Path.Combine(downloadAppSettings.Directory, thumbnailFolderName, creationTime.ToString(fileShortDateFormat));
+                    var thumbnailFilePath = destinationFilePath.Replace(destinationDirectory, thumbnailDirectory);
 
-               Directory.CreateDirectory(thumbnailDirectory);
-               await CreateThumbnailImageAsync(destinationFilePath, thumbnailFilePath, cancellationToken);
+                    Directory.CreateDirectory(thumbnailDirectory);
+                    await CreateThumbnailImageAsync(destinationFilePath, thumbnailFilePath, cancellationToken);
+                }
+                catch (Exception ex)
+                {
+                    throw new MoveToDownloadFolderException(ex);
+                }
             }
-            catch (Exception ex)
+        }
+
+        public async Task UploadAsync(
+            string inputFileName,
+            Stream stream,
+            CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            await using var imageStream = await LoadImageStreamAsync(stream, cancellationToken);
+            await SaveImageAsync(imageStream, cancellationToken);
+        }
+
+        public async Task<IEnumerable<DuplicateFileModel>> ListDuplicatesAsync(CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            return GetFiles(downloadAppSettings.Directory)
+               .Select(FileDetails.ReadFile)
+               .GroupBy(f => f.FileHash)
+               .Select(g => new DuplicateFileModel(g.Key, g.OrderBy(x => x.FileName).Select(x => x.FileName)))
+               .Where(m => m.HasDuplicate)
+               .ToList();
+        }
+
+        public Dictionary<string, FilePageInfo> PageFiles(string startFolder, int length)
+        {
+            var folders = ListFolders();
+
+            if (!string.IsNullOrWhiteSpace(startFolder))
+                folders = folders.SkipWhile(folder => folder != Path.Combine(downloadAppSettings.Directory, startFolder));
+
+            folders = folders
+                .Where(folder => folder != thumbnailFolderName)
+                .Take(length);
+
+            return folders.ToDictionary(
+                Path.GetFileName, 
+                folder => new FilePageInfo(folder));
+        }
+
+        private IEnumerable<string> ListFolders(string folder = null)
+        {
+            return Directory.GetDirectories(downloadAppSettings.Directory,
+                    folder ?? string.Empty,
+                    SearchOption.TopDirectoryOnly)
+                .OrderByDescending(x => x);
+        }
+
+        private static IEnumerable<string> GetFiles(string directory)
+        {
+            var files = new List<string>();
+
+            files.AddRange(Directory.GetFiles(directory));
+
+            foreach (var subDir in Directory.GetDirectories(directory))
+                files.AddRange(GetFiles(subDir));
+
+            return files;
+        }
+
+        private static async Task<Stream> LoadImageStreamAsync(Stream fileStream, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            var imageStream = new MemoryStream();
+            var encoder = new JpegEncoder { Quality = 90 };
+
+            fileStream.Seek(0, SeekOrigin.Begin);
+            await fileStream.CopyToAsync(imageStream, cancellationToken);
+
+            imageStream.Seek(0, SeekOrigin.Begin);
+            var image = await Image.LoadAsync(imageStream);
+            await image.SaveAsJpegAsync(imageStream, encoder, cancellationToken);
+
+            return imageStream;
+        }
+
+        private async Task SaveImageAsync(Stream imageStream, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            var creationTime = DateTime.Now;
+            var filename = $"{creationTime.ToString(fileLongDateFormat)}.jpeg";
+            var filePath = Path.Combine(uploadAppSettings.Directory, filename);
+
+            imageStream.Seek(0, SeekOrigin.Begin);
+
+            await using var fileStream = File.Create(filePath);
+            await imageStream.CopyToAsync(fileStream, cancellationToken);
+
+            File.SetCreationTime(filePath, creationTime);
+            File.SetLastWriteTime(filePath, creationTime);
+        }
+
+        private async Task CreateThumbnailImageAsync(string filePath, string thumbnailFilePath, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            var thumbnail = await Image.LoadAsync(filePath, cancellationToken);
+            thumbnail.Mutate(x => x.Resize(new ResizeOptions
             {
-               throw new MoveToDownloadFolderException(ex);
-            }
-         }
-      }
-      public FileListingModel ListFiles(string folder, CancellationToken cancellationToken)
-      {
-         var list = new FileListingModel(downloadAppSettings.Directory);
+                Size = new Size(250, 250),
+                Mode = ResizeMode.Crop
+            }));
 
-         if (!string.IsNullOrWhiteSpace(folder) && !folder.StartsWith(downloadAppSettings.Directory))
-            folder = Path.Combine(downloadAppSettings.Directory, folder);
-
-         return list.ListFiles(folder);
-      }
-
-      public async Task UploadAsync(
-          string inputFileName,
-          Stream stream,
-          CancellationToken cancellationToken)
-      {
-         cancellationToken.ThrowIfCancellationRequested();
-
-         await using var imageStream = await LoadImageStreamAsync(stream, cancellationToken);
-         await SaveImageAsync(imageStream, cancellationToken);
-      }
-
-      public async Task<IEnumerable<DuplicateFileModel>> ListDuplicatesAsync(CancellationToken cancellationToken)
-      {
-         cancellationToken.ThrowIfCancellationRequested();
-
-         return GetFiles(downloadAppSettings.Directory)
-            .Select(FileDetails.ReadFile)
-            .GroupBy(f => f.FileHash)
-            .Select(g => new DuplicateFileModel(g.Key, g.OrderBy(x => x.FileName).Select(x => x.FileName)))
-            .Where(m => m.HasDuplicate)
-            .ToList();
-      }
-
-      private static IEnumerable<string> GetFiles(string directory)
-      {
-         var files = new List<string>();
-
-         files.AddRange(Directory.GetFiles(directory));
-
-         foreach (var subDir in Directory.GetDirectories(directory))
-            files.AddRange(GetFiles(subDir));
-
-         return files;
-      }
-
-      private static async Task<Stream> LoadImageStreamAsync(Stream fileStream, CancellationToken cancellationToken)
-      {
-         cancellationToken.ThrowIfCancellationRequested();
-
-         var imageStream = new MemoryStream();
-         var encoder = new JpegEncoder { Quality = 90 };
-
-         fileStream.Seek(0, SeekOrigin.Begin);
-         await fileStream.CopyToAsync(imageStream, cancellationToken);
-
-         imageStream.Seek(0, SeekOrigin.Begin);
-         var image = await Image.LoadAsync(imageStream);
-         await image.SaveAsJpegAsync(imageStream, encoder, cancellationToken);
-
-         return imageStream;
-      }
-
-      private async Task SaveImageAsync(Stream imageStream, CancellationToken cancellationToken)
-      {
-         cancellationToken.ThrowIfCancellationRequested();
-
-         var creationTime = DateTime.Now;
-         var filename = $"{creationTime.ToString(fileLongDateFormat)}.jpeg";
-         var filePath = Path.Combine(uploadAppSettings.Directory, filename);
-
-         imageStream.Seek(0, SeekOrigin.Begin);
-
-         await using var fileStream = File.Create(filePath);
-         await imageStream.CopyToAsync(fileStream, cancellationToken);
-
-         File.SetCreationTime(filePath, creationTime);
-         File.SetLastWriteTime(filePath, creationTime);
-      }
-
-      private async Task CreateThumbnailImageAsync(string filePath, string thumbnailFilePath, CancellationToken cancellationToken)
-      {
-         cancellationToken.ThrowIfCancellationRequested();
-
-         var thumbnail = await Image.LoadAsync(filePath, cancellationToken);
-         thumbnail.Mutate(x => x.Resize(new ResizeOptions
-         {
-            Size = new Size(250, 250),
-            Mode = ResizeMode.Crop
-         }));
-
-         await thumbnail.SaveAsJpegAsync(thumbnailFilePath, cancellationToken);
-      }
-
-      public IEnumerable<string> ListFolders(string folder)
-      {
-         return Directory.GetDirectories(downloadAppSettings.Directory, folder ?? string.Empty, SearchOption.TopDirectoryOnly).OrderByDescending(x => x);
-      }
-   }
+            await thumbnail.SaveAsJpegAsync(thumbnailFilePath, cancellationToken);
+        }
+    }
 }
