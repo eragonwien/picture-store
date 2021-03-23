@@ -121,7 +121,7 @@ namespace PictureStore.Core.Services
                 folders = folders.SkipWhile(folder => folder != Path.Combine(downloadAppSettings.Directory, startFolder));
 
             folders = folders
-                .Where(folder => folder != thumbnailFolderName)
+                .Where(folder => folder != Path.Combine(downloadAppSettings.Directory, thumbnailFolderName))
                 .Take(length);
 
             return folders.ToDictionary(
