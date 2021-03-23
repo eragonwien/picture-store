@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_app/services/apiService.dart';
+import 'package:flutter_app/widgets/ImageListViewWidget.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({Key key, this.title}) : super(key: key);
@@ -12,6 +13,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final apiService = ApiService();
 
   @override
   Widget build(BuildContext context) {
@@ -24,37 +26,4 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
-}
-
-class ImageListView extends StatefulWidget {
-  @override
-  _ImageListViewState createState() => _ImageListViewState();
-}
-
-class _ImageListViewState extends State<ImageListView> {
-  int counter = 1;
-  final size = 10;
-  final folders = <String>[];
-  final apiService = new ApiService();
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView.builder(
-      padding: EdgeInsets.all(0),
-      itemBuilder: (context, i){
-        
-        if (i >= (folders.length/2)) {
-          folders.addAll(apiService.pageFiles(counter, size));
-          counter += size;
-        }
-
-        return _buildImageListFolderRow(folders[i]);
-      });
-  }
-}
-
-Widget _buildImageListFolderRow(String folder) {
-  return ListTile(
-    title: Text(folder),
-  );
 }
