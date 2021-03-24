@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:flutter_app/models/ImageFolderModel.dart';
 import 'package:http/http.dart' as http;
 
 class ApiService {
@@ -7,7 +6,7 @@ class ApiService {
 
   ApiService();
 
-  Future<List<FolderModel>> listFiles() async {
+  Future<List<String>> listFiles() async {
     var url = Uri.parse('$baseUrl/files');
 
     final response = await http.get(
@@ -15,9 +14,8 @@ class ApiService {
       headers: {'Access-Control-Allow-Origin': 'true'},
     );
 
-    Iterable ret = json.decode(response.body);
+    Iterable body = json.decode(response.body);
 
-    return List<FolderModel>.from(
-        ret.map((data) => FolderModel.fromJson(data)));
+    return body.map((e) => e.toString()).toList();
   }
 }
