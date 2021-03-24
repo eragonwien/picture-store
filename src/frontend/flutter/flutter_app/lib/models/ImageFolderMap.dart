@@ -1,3 +1,0 @@
-class ImageFolderMap {
-  Map map;
-}

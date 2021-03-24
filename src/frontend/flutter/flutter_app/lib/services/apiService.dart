@@ -1,6 +1,5 @@
 import 'dart:convert';
-
-import 'package:flutter_app/models/ImageFolderMap.dart';
+import 'package:flutter_app/models/ImageFolderModel.dart';
 import 'package:http/http.dart' as http;
 
 class ApiService {
@@ -8,18 +7,17 @@ class ApiService {
 
   ApiService();
 
-  Future<Iterable<String>> pageFiles(String start, int size) async {
-    var url = Uri.parse('$baseUrl/files/page?length=$size&start=$start');
+  Future<List<FolderModel>> listFiles() async {
+    var url = Uri.parse('$baseUrl/files');
 
     final response = await http.get(
       url,
       headers: {'Access-Control-Allow-Origin': 'true'},
     );
 
-    var list = json.decode(response.body) as Map<String, dynamic>;
+    Iterable ret = json.decode(response.body);
 
-    var results = list.entries.map((e) => e.key).toList();
-
-    return results;
+    return List<FolderModel>.from(
+        ret.map((data) => FolderModel.fromJson(data)));
   }
 }

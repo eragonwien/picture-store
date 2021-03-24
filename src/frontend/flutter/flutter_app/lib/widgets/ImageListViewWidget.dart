@@ -1,47 +1,57 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_app/models/ImageFolderModel.dart';
 import 'package:flutter_app/services/apiService.dart';
 
-class ImageListView extends StatefulWidget {
+class ImageGridViewFutureContainer extends StatefulWidget {
   @override
-  ImageListViewState createState() => ImageListViewState();
+  ImageFutureWrapperState createState() => ImageFutureWrapperState();
 }
 
-class ImageListViewState extends State<ImageListView> {
+class ImageFutureWrapperState extends State<ImageGridViewFutureContainer> {
+  bool isLoading = false;
+  final folderCount = 1;
   String startPage = '';
-  final size = 10;
-  final folders = <String>[];
+  Map<String, List<String>> data = Map<String, List<String>>();
   final apiService = new ApiService();
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<Iterable<String>>(
-      future: apiService.pageFiles(startPage, size),
-      builder: (context, AsyncSnapshot snapshot) {
-        if (snapshot.connectionState != ConnectionState.done &&
-            !snapshot.hasData) return _buildImageListFolderRow("Loading ...");
+    return FutureBuilder(
+      future: apiService.listFiles(),
+      builder: (context, AsyncSnapshot<List<FolderModel>> snapshot) {
+        if (!snapshot.hasData) return Center(child: Text("Loading ..."));
 
-        return ListView.builder(
-            padding: EdgeInsets.all(0),
-            itemBuilder: (context, i) {
-              if (i >= (folders.length / 2)) {
-                folders.addAll(snapshot.data);
-
-                if (folders.length > 0) startPage = folders.last;
-              }
-
-              if (folders.length <= i)
-                return _buildImageListFolderRow("Not Found ...");
-
-              return _buildImageListFolderRow(folders[i]);
-            });
+        return buildImageGridView(snapshot.data);
       },
     );
   }
 }
 
-Widget _buildImageListFolderRow(String folder) {
-  return ListTile(
-    title: Text(folder),
+Widget buildImageGridView(List<FolderModel> data) {
+  final keys = data.map((e) => e.name).toList();
+
+  return Column(
+    children: [
+      Expanded(
+        child: SafeArea(
+          top: false,
+          bottom: false,
+          child: GridView.builder(
+            gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                maxCrossAxisExtent: 200),
+            itemBuilder: (context, index) {
+              if (keys.length <= index) return Container();
+
+              final itemData = data.singleWhere((e) => e.name == keys[index]);
+
+              if (itemData == null) return Container();
+
+              return buildImageGridViewItem(itemData);
+            },
+          ),
+        ),
+      )
+    ],
   );
 }

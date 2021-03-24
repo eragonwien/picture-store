@@ -39,14 +39,17 @@ namespace PictureStore.Web.Api.Controllers
         }
 
         [HttpGet]
-        [Route("page")]
-        public Dictionary<string, IEnumerable<string>> PageFiles([FromQuery] string start, [FromQuery] int length)
+        public IEnumerable<DownloadFolderModel> ListFiles()
         {
-            var results = fileService.PageFiles(start, length);
+            var results = fileService.ListFiles();
 
-            return results.ToDictionary(
-                r => r.Key,
-                r => r.Value.DownloadInfos.Select(info => Path.Combine(AppBaseUrl, "files", "download", info.Folder, info.FileName)));
+            return results.Select(r => new DownloadFolderModel
+            {
+                Name = r.Key,
+                Files = r.Value.DownloadInfos
+                    .Select(info => Path.Combine(AppBaseUrl, "files", "download", info.Folder, info.FileName))
+                    .ToList()
+            });
         }
 
         [HttpGet]
