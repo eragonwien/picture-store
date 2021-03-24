@@ -21,6 +21,10 @@
 		<ProjectReference Include="..\PictureStore.Core\PictureStore.Core.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="Handlers\" />
+	</ItemGroup>
+
 	<PropertyGroup Condition=" '$(Configuration)' == '' Or '$(Configuration)' == 'Debug'">
 		<EnvironmentName>Development</EnvironmentName>
 	</PropertyGroup>

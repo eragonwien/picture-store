@@ -39,17 +39,10 @@ namespace PictureStore.Web.Api.Controllers
         }
 
         [HttpGet]
-        public IEnumerable<DownloadFolderModel> ListFiles()
+        public IEnumerable<string> ListFiles()
         {
-            var results = fileService.ListFiles();
-
-            return results.Select(r => new DownloadFolderModel
-            {
-                Name = r.Key,
-                Files = r.Value.DownloadInfos
-                    .Select(info => Path.Combine(AppBaseUrl, "files", "download", info.Folder, info.FileName))
-                    .ToList()
-            });
+            return fileService.ListFiles()
+                .Select(path => Path.Combine(AppBaseUrl, "files", "download", path));
         }
 
         [HttpGet]
