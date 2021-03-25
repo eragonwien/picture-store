@@ -23,25 +23,11 @@ class ImageFutureWrapperState extends State<ImageGridViewFutureContainer> {
   }
 }
 
-Widget buildImageListView(List<String> data) {
-  return ListView.builder(
-    itemCount: data.length,
-    itemBuilder: (BuildContext context, int index) {
-      if (data.length <= index) return null;
-
-      return Image.network(data[index]);
-    },
-  );
-}
-
 Widget buildImageGridView(List<String> data) {
   return GridView.builder(
     padding: const EdgeInsets.all(20),
     gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-        maxCrossAxisExtent: 200,
-        childAspectRatio: 3 / 2,
-        crossAxisSpacing: 20,
-        mainAxisSpacing: 10),
+        maxCrossAxisExtent: 500.0, crossAxisSpacing: 20, mainAxisSpacing: 20),
     itemCount: data.length,
     itemBuilder: (BuildContext context, int index) {
       if (data.length <= index) return null;
@@ -49,9 +35,47 @@ Widget buildImageGridView(List<String> data) {
       return Container(
         alignment: Alignment.center,
         padding: const EdgeInsets.all(8),
-        color: Colors.teal[300],
-        child: Image.network(data[index]),
+        child: buildImageGridViewCardItem(data[index]),
       );
     },
+  );
+}
+
+Widget buildImageGridViewCardItem(String data) {
+  return Center(
+    child: Card(
+      elevation: 10,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          buildImageGridViewCardItemHeader(),
+          buildImageGridViewCardItemImage(data),
+          buildImageGridViewCardItemActions(),
+        ],
+      ),
+    ),
+  );
+}
+
+Widget buildImageGridViewCardItemHeader() {
+  return ListTile(
+    leading: Icon(Icons.album),
+    title: Text('Flutter Card Image Example'),
+    subtitle: Text('An example flutter card with image'),
+  );
+}
+
+Widget buildImageGridViewCardItemImage(String data) {
+  return Expanded(
+    child: Image.network(data, fit: BoxFit.scaleDown),
+  );
+}
+
+Widget buildImageGridViewCardItemActions() {
+  return ButtonBar(
+    children: [
+      ElevatedButton(child: new Text('Like'), onPressed: null),
+      ElevatedButton(child: new Text('Like'), onPressed: null),
+    ],
   );
 }
