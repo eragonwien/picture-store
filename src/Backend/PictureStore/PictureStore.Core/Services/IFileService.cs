@@ -20,6 +20,6 @@ namespace PictureStore.Core.Services
 
         Task<IEnumerable<DuplicateFileModel>> ListDuplicatesAsync(CancellationToken cancellationToken);
 
-        string[] ListFiles();
+        Dictionary<string, string[]> PageFiles();
     }
 }

@@ -113,23 +113,21 @@ namespace PictureStore.Core.Services
                .ToList();
         }
 
-        public string[] ListFiles()
+        public Dictionary<string, string[]> PageFiles()
         {
             var directories = Directory.GetDirectories(downloadAppSettings.Directory)
                 .Where(dir => Path.GetFileName(dir) != thumbnailFolderName)
                 .ToArray();
 
-            var results = directories
+            return directories
                 .SelectMany(dir => Directory.GetFiles(dir))
                 .Select(path => new
                 {
                     Folder = Path.GetFileName(Path.GetDirectoryName(path)),
                     FileName = Path.GetFileNameWithoutExtension(path)
                 })
-                .Select(x => Path.Combine(x.Folder, x.FileName))
-                .ToArray();
-
-            return results;
+                .GroupBy(x => x.Folder)
+                .ToDictionary(g => g.Key, g => g.Select(x => x.FileName).ToArray());
         }
 
         private static IEnumerable<string> GetFiles(string directory)
