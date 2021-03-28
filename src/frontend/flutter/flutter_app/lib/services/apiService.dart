@@ -6,16 +6,23 @@ class ApiService {
 
   ApiService();
 
-  Future<List<String>> listFiles() async {
-    var url = Uri.parse('$baseUrl/files');
+  Future<Map<String, List<String>>> listFiles() async {
+    var url = Uri.parse('$baseUrl/files/page');
 
     final response = await http.get(
       url,
       headers: {'Access-Control-Allow-Origin': 'true'},
     );
 
-    Iterable body = json.decode(response.body);
+    var res = jsonDecode(response.body) as Map<String, dynamic>;
 
-    return body.map((e) => e.toString()).toList();
+    var results = Map<String, List<String>>();
+
+    res.forEach((key, value) {
+      results.putIfAbsent(
+          key, () => (value as List).map((e) => e as String).toList());
+    });
+
+    return results;
   }
 }
