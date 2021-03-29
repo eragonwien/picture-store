@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/services/apiService.dart';
 import 'package:pinch_zoom/pinch_zoom.dart';
 import 'package:transparent_image/transparent_image.dart';
 
@@ -14,6 +15,7 @@ class ImageDialog extends StatefulWidget {
 class ImageDialogState extends State<ImageDialog> {
   String image;
   int currentIndex = 0;
+  final apiService = new ApiService();
 
   ImageDialogState(this.image) {
     this.image = image;
@@ -75,10 +77,14 @@ class ImageDialogState extends State<ImageDialog> {
   }
 
   void onConfirmationButtonPressed() {
-    Navigator.of(context).pop(true);
+    apiService.deleteFile(this.image).then((value) => onImageDeleted());
+  }
 
+  void onImageDeleted() {
     ScaffoldMessenger.of(context)
         .showSnackBar(SnackBar(content: Text("Image deleted")));
+
+    Navigator.of(context).pop(true);
   }
 
   void onCancelButtonPressed() {

@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_app/services/apiService.dart';
 import 'package:flutter_app/widgets/modals/ImageModal.dart';
-// ignore: import_of_legacy_library_into_null_safe
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 class ImageGridViewsContainer extends StatefulWidget {
@@ -37,22 +35,23 @@ class _ImageGridViewsContainerState extends State<ImageGridViewsContainer> {
           images = snapshot.data!.toList();
           final orientation = MediaQuery.of(context).orientation;
 
-          return buildStaggeredGridView(images, orientation);
+          return buildGridView(images, orientation);
         },
       ),
     );
   }
 
-  Widget buildStaggeredGridView(List<String> data, Orientation orientation) {
+  Widget buildGridView(List<String> data, Orientation orientation) {
     return Container(
       margin: EdgeInsets.all(12),
-      child: StaggeredGridView.countBuilder(
-        crossAxisCount: orientation == Orientation.portrait ? 2 : 3,
-        crossAxisSpacing: 10,
-        mainAxisSpacing: 10,
+      child: GridView.builder(
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: orientation == Orientation.portrait ? 2 : 3,
+            crossAxisSpacing: 10,
+            mainAxisSpacing: 10),
         itemCount: data.length,
         itemBuilder: (BuildContext context, int index) {
-          if (data.length <= index) return null;
+          if (data.length <= index) return Container();
 
           String image = data[index];
 
@@ -73,9 +72,6 @@ class _ImageGridViewsContainerState extends State<ImageGridViewsContainer> {
                 border: Border.all(color: Colors.orange),
                 borderRadius: BorderRadius.all(Radius.circular(15))),
           );
-        },
-        staggeredTileBuilder: (index) {
-          return StaggeredTile.count(1, index.isEven ? 1 : 1.5);
         },
       ),
     );
@@ -99,10 +95,12 @@ class _ImageGridViewsContainerState extends State<ImageGridViewsContainer> {
 
     if (!isDeleted) return;
 
-    print('state changed=$isDeleted');
-
-    setState(() {});
+    triggerStateChange();
 
     selectedImage = null;
+  }
+
+  void triggerStateChange() {
+    setState(() {});
   }
 }

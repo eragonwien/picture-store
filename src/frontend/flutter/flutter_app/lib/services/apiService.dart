@@ -38,4 +38,11 @@ class ApiService {
 
     return results;
   }
+
+  Future deleteFile(String imageSource) async {
+    await http.delete(
+      Uri.parse(imageSource),
+      headers: {'Access-Control-Allow-Origin': 'true'},
+    );
+  }
 }

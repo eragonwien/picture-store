@@ -28,7 +28,6 @@ dependencies:
    # Use with the CupertinoIcons class for iOS style icons.
    cupertino_icons:
    http:
-   flutter_staggered_grid_view: 
    transparent_image:
    pinch_zoom:
 
