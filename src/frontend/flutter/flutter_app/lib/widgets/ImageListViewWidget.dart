@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_app/services/apiService.dart';
+import 'package:flutter_app/widgets/modals/ImageModal.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:transparent_image/transparent_image.dart';
 
@@ -41,7 +42,7 @@ class ImageGridViewsContainer extends StatelessWidget {
             child: ClipRRect(
               borderRadius: BorderRadius.circular(15),
               child: GestureDetector(
-                onTap: () => onImageTileTapped(image),
+                onTap: () => onImageTileTapped(context, image),
                 child: FadeInImage.memoryNetwork(
                   image: image,
                   placeholder: kTransparentImage,
@@ -62,7 +63,13 @@ class ImageGridViewsContainer extends StatelessWidget {
     );
   }
 
-  onImageTileTapped(String image) {
-    print(image);
+  onImageTileTapped(BuildContext context, String image) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+          builder: (BuildContext context) {
+            return ImageDialog(image: image);
+          },
+          fullscreenDialog: true),
+    );
   }
 }

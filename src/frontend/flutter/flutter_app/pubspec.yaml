@@ -30,6 +30,7 @@ dependencies:
    http:
    flutter_staggered_grid_view: 
    transparent_image:
+   pinch_zoom:
 
 dev_dependencies:
    flutter_test:
