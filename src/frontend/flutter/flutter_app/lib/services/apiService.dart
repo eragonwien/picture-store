@@ -6,7 +6,20 @@ class ApiService {
 
   ApiService();
 
-  Future<Map<String, List<String>>> listFiles() async {
+  Future<List<String>> listFiles() async {
+    var url = Uri.parse('$baseUrl/files');
+
+    final response = await http.get(
+      url,
+      headers: {'Access-Control-Allow-Origin': 'true'},
+    );
+
+    var rawBody = jsonDecode(response.body) as List;
+
+    return rawBody.map((item) => item as String).toList();
+  }
+
+  Future<Map<String, List<String>>> pageFiles() async {
     var url = Uri.parse('$baseUrl/files/page');
 
     final response = await http.get(
