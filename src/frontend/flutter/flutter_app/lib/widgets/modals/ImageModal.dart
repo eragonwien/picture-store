@@ -5,7 +5,7 @@ import 'package:transparent_image/transparent_image.dart';
 class ImageDialog extends StatefulWidget {
   final String image;
 
-  const ImageDialog({Key key, @required this.image}) : super(key: key);
+  const ImageDialog({Key? key, required this.image}) : super(key: key);
 
   @override
   ImageDialogState createState() => ImageDialogState(this.image);
@@ -23,6 +23,7 @@ class ImageDialogState extends State<ImageDialog> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+        appBar: AppBar(),
         body: Container(
           child: PinchZoom(
             image: FadeInImage.memoryNetwork(
@@ -48,16 +49,7 @@ class ImageDialogState extends State<ImageDialog> {
   }
 
   void onFloatingActionButtonPressed() {
-    FutureBuilder(
-        future: showDeleteImageConfirmationDialog(),
-        builder: (context, AsyncSnapshot snapshot) {
-          print('show delete image confirmation dialog');
-          return null;
-        });
-  }
-
-  Future<void> showDeleteImageConfirmationDialog() async {
-    return showDialog(
+    showDialog(
         context: context,
         barrierDismissible: false,
         builder: (BuildContext context) {
@@ -71,18 +63,31 @@ class ImageDialogState extends State<ImageDialog> {
                 child: Text('Confirm'),
                 style: TextButton.styleFrom(
                     primary: Colors.red, backgroundColor: Colors.white),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
+                onPressed: onConfirmationButtonPressed,
               ),
               TextButton(
                 child: Text('Cancel'),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
+                onPressed: onCancelButtonPressed,
               ),
             ],
           );
-        });
+        }).then((value) => onDeleteImageConfirmationDialogClosed(value));
+  }
+
+  void onConfirmationButtonPressed() {
+    Navigator.of(context).pop(true);
+
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text("Image deleted")));
+  }
+
+  void onCancelButtonPressed() {
+    Navigator.of(context).pop(false);
+  }
+
+  onDeleteImageConfirmationDialogClosed(bool isDeleted) {
+    if (isDeleted) {
+      Navigator.of(context).pop(isDeleted);
+    }
   }
 }

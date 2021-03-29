@@ -2,24 +2,42 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_app/services/apiService.dart';
 import 'package:flutter_app/widgets/modals/ImageModal.dart';
+// ignore: import_of_legacy_library_into_null_safe
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:transparent_image/transparent_image.dart';
 
-class ImageGridViewsContainer extends StatelessWidget {
+class ImageGridViewsContainer extends StatefulWidget {
+  @override
+  _ImageGridViewsContainerState createState() =>
+      _ImageGridViewsContainerState();
+}
+
+class _ImageGridViewsContainerState extends State<ImageGridViewsContainer> {
   final apiService = new ApiService();
+
+  List<String> images = [];
+  String? selectedImage;
 
   @override
   Widget build(BuildContext context) {
+    print('ImageGridViewsContainer is built');
     return Container(
       child: FutureBuilder(
         future: apiService.listFiles(),
         builder: (BuildContext context, AsyncSnapshot<List<String>> snapshot) {
+          if (snapshot.hasError) {
+            ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(snapshot.error.toString())));
+            return Container();
+          }
+
           if (!snapshot.hasData)
             return Center(child: CircularProgressIndicator());
 
+          images = snapshot.data!.toList();
           final orientation = MediaQuery.of(context).orientation;
 
-          return buildStaggeredGridView(snapshot.data, orientation);
+          return buildStaggeredGridView(images, orientation);
         },
       ),
     );
@@ -64,12 +82,27 @@ class ImageGridViewsContainer extends StatelessWidget {
   }
 
   onImageTileTapped(BuildContext context, String image) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-          builder: (BuildContext context) {
-            return ImageDialog(image: image);
-          },
-          fullscreenDialog: true),
-    );
+    selectedImage = image;
+    Navigator.of(context)
+        .push(
+          MaterialPageRoute(
+              builder: (BuildContext context) {
+                return ImageDialog(image: image);
+              },
+              fullscreenDialog: true),
+        )
+        .then((value) => onImageDialogClosed(value));
+  }
+
+  void onImageDialogClosed(value) {
+    bool isDeleted = value != null && value as bool;
+
+    if (!isDeleted) return;
+
+    print('state changed=$isDeleted');
+
+    setState(() {});
+
+    selectedImage = null;
   }
 }

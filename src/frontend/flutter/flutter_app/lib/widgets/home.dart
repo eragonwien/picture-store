@@ -4,7 +4,7 @@ import 'package:flutter_app/services/apiService.dart';
 import 'package:flutter_app/widgets/ImageListViewWidget.dart';
 
 class HomePage extends StatefulWidget {
-  HomePage({Key key, this.title}) : super(key: key);
+  HomePage({Key? key, required this.title}) : super(key: key);
 
   final String title;
 
