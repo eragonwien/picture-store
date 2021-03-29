@@ -36,19 +36,12 @@ namespace PictureStore.Core.Services
             string filename,
             CancellationToken cancellationToken)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-
             var result = new DownloadFileModel();
 
             if (cancellationToken.IsCancellationRequested)
                 return result;
 
-            filename = Path.ChangeExtension(filename, "jpeg");
-
-            var path = Path.Combine(downloadAppSettings.Directory, folder, filename);
-
-            if (!File.Exists(path))
-                throw new FileNotFoundException($"File {filename} not found at {path}");
+            var path = GetFilePath(folder, filename);
 
             result.Content = await File.ReadAllBytesAsync(path, cancellationToken);
             result.ContentType = MimeUtility.GetMimeMapping(path);
@@ -130,6 +123,17 @@ namespace PictureStore.Core.Services
                 .ToDictionary(g => g.Key, g => g.Select(x => x.FileName).ToArray());
         }
 
+        public async Task DeleteFileAsync(string folder, string filename, CancellationToken cancellationToken)
+        {
+            if (cancellationToken.IsCancellationRequested) return;
+
+            var path = GetFilePath(folder, filename);
+
+            if (!File.Exists(path)) return;
+
+            File.Delete(path);
+        }
+
         private static IEnumerable<string> GetFiles(string directory)
         {
             var files = new List<string>();
@@ -188,6 +192,17 @@ namespace PictureStore.Core.Services
             }));
 
             await thumbnail.SaveAsJpegAsync(thumbnailFilePath, cancellationToken);
+        }
+
+        private string GetFilePath(string folder, string filename)
+        {
+            filename = Path.ChangeExtension(filename, "jpeg");
+            var path = Path.Combine(downloadAppSettings.Directory, folder, filename);
+
+            if (!File.Exists(path))
+                throw new FileNotFoundException($"File {filename} not found at {path}");
+
+            return path;
         }
     }
 }

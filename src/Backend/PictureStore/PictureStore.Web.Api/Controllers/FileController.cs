@@ -43,7 +43,7 @@ namespace PictureStore.Web.Api.Controllers
         public IEnumerable<string> ListFiles()
         {
             return fileService.PageFiles()
-                .SelectMany(f => f.Value.Select(path => Path.Combine(AppBaseUrl, "files", "download", f.Key, path)));
+                .SelectMany(f => f.Value.Select(path => Path.Combine(AppBaseUrl, "files", f.Key, path)));
         }
 
         [HttpGet]
@@ -53,7 +53,7 @@ namespace PictureStore.Web.Api.Controllers
             return fileService.PageFiles()
                 .ToDictionary(
                     f => f.Key, 
-                    f => f.Value.Select(path => Path.Combine(AppBaseUrl, "files", "download", f.Key, path)).ToArray());
+                    f => f.Value.Select(path => Path.Combine(AppBaseUrl, "files", f.Key, path)).ToArray());
         }
 
         [HttpGet]
@@ -64,12 +64,19 @@ namespace PictureStore.Web.Api.Controllers
         }
 
         [HttpGet]
-        [Route("download/{folder}/{filename}")]
+        [Route("{folder}/{filename}")]
         public async Task<FileContentResult> DownloadFile([FromRoute] string folder, [FromRoute] string filename, CancellationToken cancellationToken)
         {
             var result = await fileService.DownloadAsync(folder, filename, cancellationToken);
 
             return File(result.Content, result.ContentType);
+        }
+
+        [HttpDelete]
+        [Route("{folder}/{filename}")]
+        public async Task DeleteFile([FromRoute] string folder, [FromRoute] string filename, CancellationToken cancellationToken)
+        {
+            await fileService.DeleteFileAsync(folder, filename, cancellationToken);
         }
     }
 }
