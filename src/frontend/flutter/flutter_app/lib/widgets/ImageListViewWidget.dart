@@ -13,7 +13,8 @@ class ImageGridViewsContainer extends StatelessWidget {
       child: FutureBuilder(
         future: apiService.listFiles(),
         builder: (BuildContext context, AsyncSnapshot<List<String>> snapshot) {
-          if (!snapshot.hasData) return Center(child: Text("Loading ..."));
+          if (!snapshot.hasData)
+            return Center(child: CircularProgressIndicator());
 
           final orientation = MediaQuery.of(context).orientation;
 
@@ -38,7 +39,9 @@ class ImageGridViewsContainer extends StatelessWidget {
 
           return Container(
             child: ClipRRect(
-              child: Center(
+              borderRadius: BorderRadius.circular(15),
+              child: GestureDetector(
+                onTap: () => onImageTileTapped(image),
                 child: FadeInImage.memoryNetwork(
                   image: image,
                   placeholder: kTransparentImage,
@@ -53,9 +56,13 @@ class ImageGridViewsContainer extends StatelessWidget {
           );
         },
         staggeredTileBuilder: (index) {
-          return StaggeredTile.count(1, index.isEven ? 1 : 1);
+          return StaggeredTile.count(1, index.isEven ? 1 : 1.5);
         },
       ),
     );
+  }
+
+  onImageTileTapped(String image) {
+    print(image);
   }
 }
