@@ -38,22 +38,19 @@ namespace PictureStore.Web.Api.Controllers
             await fileService.TransferFileToDownloadFolderAsync(cancellationToken);
         }
 
+        [HttpPost]
+        [Route("duplicates")]
+        public async Task CleanupFiles(CancellationToken cancellationToken)
+        {
+            await fileService.CleanupFilesAsync(cancellationToken);
+        }
+
         [HttpGet]
         [Route("")]
         public IEnumerable<string> ListFiles()
         {
             return fileService.PageFiles()
                 .SelectMany(f => f.Value.Select(path => Path.Combine(AppBaseUrl, "files", f.Key, path)));
-        }
-
-        [HttpGet]
-        [Route("page")]
-        public Dictionary<string, string[]> PageFiles()
-        {
-            return fileService.PageFiles()
-                .ToDictionary(
-                    f => f.Key, 
-                    f => f.Value.Select(path => Path.Combine(AppBaseUrl, "files", f.Key, path)).ToArray());
         }
 
         [HttpGet]

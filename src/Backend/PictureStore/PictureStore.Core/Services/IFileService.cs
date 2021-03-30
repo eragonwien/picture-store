@@ -23,5 +23,7 @@ namespace PictureStore.Core.Services
         Dictionary<string, string[]> PageFiles();
 
         Task DeleteFileAsync(string folder, string filename, CancellationToken cancellationToken);
+
+        Task CleanupFilesAsync(CancellationToken cancellationToken);
     }
 }

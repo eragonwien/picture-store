@@ -134,6 +134,21 @@ namespace PictureStore.Core.Services
             File.Delete(path);
         }
 
+        public async Task CleanupFilesAsync(CancellationToken cancellationToken)
+        {
+            var duplicates = await ListDuplicatesAsync(cancellationToken);
+
+            Parallel.ForEach(duplicates, (duplicate) =>
+            {
+                foreach (var file in duplicate.Files.Skip(1))
+                {
+                    if (!File.Exists(file)) return;
+
+                    File.Delete(file);
+                }
+            });
+        }
+
         private static IEnumerable<string> GetFiles(string directory)
         {
             var files = new List<string>();
