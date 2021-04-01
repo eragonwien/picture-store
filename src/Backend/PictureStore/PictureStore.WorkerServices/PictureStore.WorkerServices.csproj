@@ -1,46 +1,33 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Worker">
-
-	<PropertyGroup>
-		<TargetFramework>net5.0</TargetFramework>
-		<UserSecretsId>dotnet-PictureStore.WorkerServices-A5786232-3E97-4E17-BD6B-ECFB163361CA</UserSecretsId>
-		<NoWarn>CS1998</NoWarn>
-		<LangVersion>latest</LangVersion>
-		<LanguageTargets>$(MSBuildBinPath)\Microsoft.CSharp.targets</LanguageTargets>
-		<Configurations>Debug;Release;RaspberryPiRelease</Configurations>
-		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-		<DockerfileTag>picturestore.workerservices</DockerfileTag>
-	</PropertyGroup>
-
-	<ItemGroup>
-		<PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
-		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.13" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<ProjectReference Include="..\PictureStore.Core\PictureStore.Core.csproj" />
-	</ItemGroup>
-
-	<PropertyGroup Condition=" '$(Configuration)' == '' Or '$(Configuration)' == 'Debug'">
-		<EnvironmentName>Development</EnvironmentName>
-	</PropertyGroup>
-
-	<PropertyGroup Condition=" '$(Configuration)' != '' AND '$(Configuration)' != 'Debug' ">
-		<EnvironmentName>Production</EnvironmentName>
-	</PropertyGroup>
-
-	<Target Name="CopyDockerFile" BeforeTargets="PreBuildEvent">
-		<Copy SourceFiles="Docker/$(Configuration).Dockerfile" DestinationFiles="Dockerfile" Condition="Exists('Docker/$(Configuration).Dockerfile')" />
-		<Copy SourceFiles="Docker/Default.Dockerfile" DestinationFiles="Dockerfile" Condition="!Exists('Docker/$(Configuration).Dockerfile')" />
-	</Target>
-
-	<Target Name="CopyAppSettings" BeforeTargets="PreBuildEvent">
-		<Copy SourceFiles="$(SolutionDir)/Configurations/appsettings.$(Configuration).json" DestinationFiles="appsettings.json" Condition="Exists('$(SolutionDir)/Configurations/appsettings.$(Configuration).json')" />
-		<Copy SourceFiles="$(SolutionDir)/Configurations/appsettings.json" DestinationFiles="appsettings.json" Condition="!Exists('$(SolutionDir)/Configurations/appsettings.$(Configuration).json')" />
-	</Target>
-
-	<Target Name="PushToDockerHub" AfterTargets="PostBuildEvent" Condition="Exists('Docker/$(Configuration).Dockerfile') AND $(Configuration) != 'Development'">
-		<Message Text="Push docker image to Docker hub" Importance="high" />
-		<Exec Command="docker build --tag eragonwien/picturestore.workerservices:latest -f Dockerfile .." />
-		<Exec Command="docker push eragonwien/picturestore.workerservices:latest" />
-	</Target>
+﻿<Project Sdk="Microsoft.NET.Sdk.Worker;Microsoft.NET.Sdk.Publish">
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <UserSecretsId>dotnet-PictureStore.WorkerServices-A5786232-3E97-4E17-BD6B-ECFB163361CA</UserSecretsId>
+    <NoWarn>CS1998</NoWarn>
+    <LangVersion>latest</LangVersion>
+    <LanguageTargets>$(MSBuildBinPath)\Microsoft.CSharp.targets</LanguageTargets>
+    <Configurations>Debug;Release;RaspberryPiRelease</Configurations>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <DockerfileTag>picturestore.workerservices</DockerfileTag>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.13" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\PictureStore.Core\PictureStore.Core.csproj" />
+  </ItemGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == '' Or '$(Configuration)' == 'Debug'">
+    <EnvironmentName>Development</EnvironmentName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' != '' AND '$(Configuration)' != 'Debug' ">
+    <EnvironmentName>Production</EnvironmentName>
+  </PropertyGroup>
+  <Target Name="CopyDockerFile" BeforeTargets="PreBuildEvent">
+    <Copy SourceFiles="Docker/$(Configuration).Dockerfile" DestinationFiles="Dockerfile" Condition="Exists('Docker/$(Configuration).Dockerfile')" />
+    <Copy SourceFiles="Docker/Default.Dockerfile" DestinationFiles="Dockerfile" Condition="!Exists('Docker/$(Configuration).Dockerfile')" />
+  </Target>
+  <Target Name="CopyAppSettings" BeforeTargets="PreBuildEvent">
+    <Copy SourceFiles="$(SolutionDir)/Configurations/appsettings.$(Configuration).json" DestinationFiles="appsettings.json" Condition="Exists('$(SolutionDir)/Configurations/appsettings.$(Configuration).json')" />
+    <Copy SourceFiles="$(SolutionDir)/Configurations/appsettings.json" DestinationFiles="appsettings.json" Condition="!Exists('$(SolutionDir)/Configurations/appsettings.$(Configuration).json')" />
+  </Target>
 </Project>
