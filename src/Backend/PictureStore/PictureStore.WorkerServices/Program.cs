@@ -22,6 +22,7 @@ namespace PictureStore.WorkerServices
                     services.Configure<PictureStoreUploadAppSettings>(hostContext.Configuration.GetSection(PictureStoreUploadAppSettings.Section));
                     services.Configure<PictureStoreDownloadAppSettings>(hostContext.Configuration.GetSection(PictureStoreDownloadAppSettings.Section));
                     services.Configure<PictureStoreFileTransferAppSettings>(hostContext.Configuration.GetSection(PictureStoreFileTransferAppSettings.Section));
+                    services.Configure<PictureStoreCleanupFilesAppSettings>(hostContext.Configuration.GetSection(PictureStoreCleanupFilesAppSettings.Section));
                 });
     }
 }

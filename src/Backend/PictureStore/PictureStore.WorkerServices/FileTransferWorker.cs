@@ -30,11 +30,20 @@ namespace PictureStore.WorkerServices
             {
                 logger.LogInformation("FileTransferWorker started at: {time}", DateTimeOffset.Now);
 
-                await fileService.TransferFileToDownloadFolderAsync(cancellationToken);
+                try
+                {
+                    await fileService.TransferFileToDownloadFolderAsync(cancellationToken);
 
-                logger.LogInformation("FileTransferWorker completed at: {time}", DateTimeOffset.Now);
-                logger.LogInformation("FileTransferWorker start again at: {time}", DateTimeOffset.Now.Add(fileTransferAppSettings.Interval));
-                await Task.Delay(fileTransferAppSettings.Interval, cancellationToken);
+                    logger.LogInformation("FileTransferWorker completed at: {time}", DateTimeOffset.Now);
+                    logger.LogInformation("FileTransferWorker start again at: {time}", DateTimeOffset.Now.Add(fileTransferAppSettings.Interval));
+
+                    await Task.Delay(fileTransferAppSettings.Interval, cancellationToken);
+                }
+                catch (TaskCanceledException)
+                {
+                    logger.LogInformation("FileTransferWorker was cancelled at: {time}", DateTimeOffset.Now);
+                    break;
+                }
             }
         }
     }
