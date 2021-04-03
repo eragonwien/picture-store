@@ -48,11 +48,6 @@ namespace PictureStore.Web.Api
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "PictureStore.Web.Api v1"));
                 app.UseHttpsRedirection();
-
-                app.UseCors(options => options
-                    .AllowAnyOrigin()
-                    .AllowAnyHeader()
-                    .AllowAnyMethod());
             }
             else
             {
@@ -61,6 +56,11 @@ namespace PictureStore.Web.Api
                     ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
                 });
             }
+
+            app.UseCors(options => options
+                .AllowAnyOrigin()
+                .AllowAnyHeader()
+                .AllowAnyMethod());
 
             app.UseExceptionHandler(a => ConfigureExceptionHandler(a, env));
 
