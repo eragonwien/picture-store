@@ -17,6 +17,7 @@ namespace PictureStore.WorkerServices
                 .ConfigureServices((hostContext, services) =>
                 {
                     services.AddHostedService<FileTransferWorker>();
+                    services.AddHostedService<CleanupFilesWorker>();
                     services.AddSingleton<IFileService, FileService>();
 
                     services.Configure<PictureStoreUploadAppSettings>(hostContext.Configuration.GetSection(PictureStoreUploadAppSettings.Section));
