@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using PictureStore.Core.Models.AppSettings;
 using PictureStore.Core.Services;
 using System;
@@ -16,11 +17,11 @@ namespace PictureStore.WorkerServices
 
         public CleanupFilesWorker(ILogger<FileTransferWorker> logger, 
             IFileService fileService,
-            PictureStoreCleanupFilesAppSettings cleanupFilesAppSettings)
+            IOptions<PictureStoreCleanupFilesAppSettings> cleanupFilesAppSettingsOptions)
         {
             this.logger = logger;
             this.fileService = fileService;
-            this.cleanupFilesAppSettings = cleanupFilesAppSettings;
+            cleanupFilesAppSettings = cleanupFilesAppSettingsOptions.Value;
         }
 
         protected override async Task ExecuteAsync(CancellationToken cancellationToken)

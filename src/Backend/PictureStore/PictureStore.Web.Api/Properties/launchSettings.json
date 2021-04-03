@@ -1,44 +1,44 @@
 {
-   "iisSettings": {
-      "windowsAuthentication": false,
-      "anonymousAuthentication": true,
-      "iisExpress": {
-         "applicationUrl": "http://localhost:59023",
-         "sslPort": 49170
+  "iisSettings": {
+    "windowsAuthentication": false,
+    "anonymousAuthentication": true,
+    "iisExpress": {
+      "applicationUrl": "http://localhost:59023",
+      "sslPort": 49170
+    }
+  },
+  "$schema": "http://json.schemastore.org/launchsettings.json",
+  "profiles": {
+    "IIS Express": {
+      "commandName": "IISExpress",
+      "launchBrowser": true,
+      "launchUrl": "swagger",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
       }
-   },
-   "$schema": "http://json.schemastore.org/launchsettings.json",
-   "profiles": {
-      "IIS Express": {
-         "commandName": "IISExpress",
-         "launchBrowser": true,
-         "launchUrl": "swagger",
-         "environmentVariables": {
-            "ASPNETCORE_ENVIRONMENT": "Development"
-         }
+    },
+    "PictureStore.Web.Api": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "launchUrl": "swagger",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
       },
-      "PictureStore.Web.Api": {
-         "commandName": "Project",
-         "launchBrowser": true,
-         "launchUrl": "swagger",
-         "environmentVariables": {
-            "ASPNETCORE_ENVIRONMENT": "Development"
-         },
-         "dotnetRunMessages": "true",
-         "applicationUrl": "https://localhost:5001;http://localhost:5000"
+      "dotnetRunMessages": "true",
+      "applicationUrl": "https://localhost:5001;http://localhost:5000"
+    },
+    "Docker": {
+      "commandName": "Docker",
+      "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}/swagger",
+      "environmentVariables": {
+        "ASPNETCORE_URLS": "https://+:443;http://+:80",
+        "ASPNETCORE_HTTPS_PORT": "44360"
       },
-      "Docker": {
-         "commandName": "Docker",
-         "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}/swagger",
-         "environmentVariables": {
-            "ASPNETCORE_URLS": "https://+:443;http://+:80",
-            "ASPNETCORE_HTTPS_PORT": "44360"
-         },
-         "publishAllPorts": true,
-         "httpPort": 51803,
-         "useSSL": true,
-         "DockerfileRunArguments": "-v C:\\temp\\picture-store\\upload_files:/upload_files -v C:\\temp\\picture-store\\download_files:/download_files ",
-         "sslPort": 49170
-      }
-   }
+      "publishAllPorts": true,
+      "httpPort": 51803,
+      "useSSL": true,
+      "DockerfileRunArguments": "-v C:\\temp\\picture-store\\uploads:/upload_files -v C:\\temp\\picture-store\\downloads:/download_files ",
+      "sslPort": 49170
+    }
+  }
 }

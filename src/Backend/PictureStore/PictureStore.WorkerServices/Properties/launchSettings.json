@@ -9,7 +9,7 @@
     },
     "Docker": {
       "commandName": "Docker",
-      "DockerfileRunArguments": "-v C:\\temp\\picture-store\\upload_files:/upload_files -v C:\\temp\\picture-store\\download_files:/download_files "
+      "DockerfileRunArguments": "-v C:\\temp\\picture-store\\uploads:/upload_files -v C:\\temp\\picture-store\\downloads:/download_files "
     }
   }
 }
