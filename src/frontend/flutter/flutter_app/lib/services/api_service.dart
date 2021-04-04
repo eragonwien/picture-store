@@ -1,8 +1,10 @@
 import 'dart:convert';
+import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter_app/env.dart';
 
 class ApiService {
-  final baseUrl = 'https://localhost:49170';
+  final baseUrl = configurations['baseUrl'];
 
   ApiService();
 

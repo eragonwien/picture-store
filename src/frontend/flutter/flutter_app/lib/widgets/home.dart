@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_app/services/apiService.dart';
-import 'package:flutter_app/widgets/ImageListViewWidget.dart';
+import 'package:flutter_app/services/api_service.dart';
+import 'package:flutter_app/widgets/features/images_grid_view/image_grid_view.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({Key? key, required this.title}) : super(key: key);

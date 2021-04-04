@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_app/services/apiService.dart';
-import 'package:flutter_app/widgets/modals/ImageModal.dart';
+import 'package:flutter_app/services/api_service.dart';
 import 'package:transparent_image/transparent_image.dart';
+
+import 'image_dialog.dart';
 
 class ImageGridViewsContainer extends StatefulWidget {
   @override
-  _ImageGridViewsContainerState createState() =>
-      _ImageGridViewsContainerState();
+  ImageGridViewsContainerState createState() => ImageGridViewsContainerState();
 }
 
-class _ImageGridViewsContainerState extends State<ImageGridViewsContainer> {
+class ImageGridViewsContainerState extends State<ImageGridViewsContainer> {
   final apiService = new ApiService();
 
   List<String> images = [];
@@ -18,21 +18,17 @@ class _ImageGridViewsContainerState extends State<ImageGridViewsContainer> {
 
   @override
   Widget build(BuildContext context) {
-    print('ImageGridViewsContainer is built');
     return Container(
       child: FutureBuilder(
         future: apiService.listFiles(),
         builder: (BuildContext context, AsyncSnapshot<List<String>> snapshot) {
-          if (snapshot.hasError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(snapshot.error.toString())));
-            return Container();
-          }
+          if (snapshot.hasError) return Container();
 
           if (!snapshot.hasData)
             return Center(child: CircularProgressIndicator());
 
           images = snapshot.data!.toList();
+
           final orientation = MediaQuery.of(context).orientation;
 
           return buildGridView(images, orientation);

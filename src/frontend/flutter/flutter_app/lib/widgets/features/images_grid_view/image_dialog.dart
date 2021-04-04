@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/services/apiService.dart';
+import 'package:flutter_app/services/api_service.dart';
 import 'package:pinch_zoom/pinch_zoom.dart';
 import 'package:transparent_image/transparent_image.dart';
 
@@ -91,7 +91,7 @@ class ImageDialogState extends State<ImageDialog> {
     Navigator.of(context).pop(false);
   }
 
-  onDeleteImageConfirmationDialogClosed(bool isDeleted) {
+  void onDeleteImageConfirmationDialogClosed(bool isDeleted) {
     if (isDeleted) {
       Navigator.of(context).pop(isDeleted);
     }
