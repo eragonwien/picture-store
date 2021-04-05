@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_app/services/api_service.dart';
 import 'package:flutter_app/widgets/features/images_grid_view/image_grid_view.dart';
+import 'package:flutter_app/widgets/shared/bottom_navigation_bar_widget.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({Key? key, required this.title}) : super(key: key);
@@ -24,6 +25,7 @@ class _HomePageState extends State<HomePage> {
           title: Text(widget.title),
         ),
         body: ImageGridViewsContainer(),
+        bottomNavigationBar: BottomNavigationBarWidget(),
       ),
     );
   }

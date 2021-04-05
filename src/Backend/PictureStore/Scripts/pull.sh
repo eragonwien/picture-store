@@ -22,6 +22,3 @@ docker rm picturestore.workerservices-container
 
 # Runs new workerservices container
 docker run --name=picturestore.workerservices-container --restart=always -v $PICTURE_STORE_MEDIA/uploads:/upload_files -v $PICTURE_STORE_MEDIA/downloads:/download_files -d eragonwien/picturestore.workerservices
-
-# Restarts nginx
-service nginx restart
