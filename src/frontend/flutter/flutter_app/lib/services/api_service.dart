@@ -1,14 +1,12 @@
 import 'dart:convert';
-import 'package:http/http.dart' as http;
 import 'package:flutter_app/env.dart';
+import 'package:http/http.dart' as http;
 
 class ApiService {
-  final baseUrl = configurations['baseUrl'];
-
   ApiService();
 
   Future<List<String>> listFiles() async {
-    var url = Uri.parse('$baseUrl/files');
+    var url = Uri.parse('$appBaseUrl/files');
 
     final response = await http.get(
       url,
@@ -21,7 +19,7 @@ class ApiService {
   }
 
   Future<Map<String, List<String>>> pageFiles() async {
-    var url = Uri.parse('$baseUrl/files/page');
+    var url = Uri.parse('$appBaseUrl/files/page');
 
     final response = await http.get(
       url,
