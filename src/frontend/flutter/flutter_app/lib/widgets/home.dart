@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_app/services/api_service.dart';
+import 'package:flutter_app/widgets/features/image_upload/image_upload_view.dart';
 import 'package:flutter_app/widgets/features/images_grid_view/image_grid_view.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -48,7 +49,7 @@ class _HomePageState extends State<HomePage> {
       index: _selectedIndex,
       children: <Widget>[
         ImageGridViewsContainer(),
-        Container(),
+        ImageUploadPage(),
         Container(),
       ],
     );
@@ -79,30 +80,20 @@ class _HomePageState extends State<HomePage> {
   }
 
   void onItemTapped(int index) async {
-    if (index == 1) await uploadImage();
-
     setState(() {
+      _selectedIndex = index;
+
       switch (index) {
-        case 0:
-          _title = widget.title;
-          _selectedIndex = index;
+        case 1:
+          _title = 'Uploads';
           break;
         case 2:
           _title = 'Settings';
-          _selectedIndex = index;
           break;
         default:
           _title = widget.title;
           break;
       }
     });
-  }
-
-  Future uploadImage() async {
-    final pickedFile = await imagePicker.getImage(source: ImageSource.gallery);
-
-    if (pickedFile == null) return;
-
-    await apiService.uploadAsync(pickedFile.path);
   }
 }

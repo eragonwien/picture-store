@@ -17,7 +17,6 @@ class ImageGridViewsContainerState extends State<ImageGridViewsContainer> {
 
   @override
   Widget build(BuildContext context) {
-    debugPrint('Build');
     return Container(
       child: FutureBuilder(
         future: apiService.listFiles(),
