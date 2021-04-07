@@ -12,12 +12,12 @@ class ImageGridViewsContainer extends StatefulWidget {
 
 class ImageGridViewsContainerState extends State<ImageGridViewsContainer> {
   final apiService = new ApiService();
-
   List<String> images = [];
   String? selectedImage;
 
   @override
   Widget build(BuildContext context) {
+    debugPrint('Build');
     return Container(
       child: FutureBuilder(
         future: apiService.listFiles(),

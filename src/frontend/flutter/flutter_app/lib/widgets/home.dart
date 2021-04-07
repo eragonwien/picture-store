@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_app/services/api_service.dart';
 import 'package:flutter_app/widgets/features/images_grid_view/image_grid_view.dart';
+import 'package:image_picker/image_picker.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({Key? key, required this.title}) : super(key: key);
@@ -14,14 +15,8 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final apiService = ApiService();
+  final imagePicker = ImagePicker();
   int selectedIndex = 0;
-
-  static List<Widget> widgetOptions = <Widget>[
-    ImageGridViewsContainer(),
-    Container(),
-    Container(),
-    Container(),
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -31,9 +26,20 @@ class _HomePageState extends State<HomePage> {
         appBar: AppBar(
           title: Text(widget.title),
         ),
-        body: widgetOptions.elementAt(selectedIndex),
+        body: buildNavigationPage(),
         bottomNavigationBar: buildBottomNavigationBar(),
       ),
+    );
+  }
+
+  Widget buildNavigationPage() {
+    return IndexedStack(
+      index: selectedIndex,
+      children: <Widget>[
+        ImageGridViewsContainer(),
+        Container(),
+        Container(),
+      ],
     );
   }
 
@@ -61,9 +67,28 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  void onItemTapped(int index) {
+  void setPage(int index) {
     setState(() {
       selectedIndex = index;
     });
+  }
+
+  void onItemTapped(int index) async {
+    switch (index) {
+      case 1:
+        await uploadImage();
+        break;
+      default:
+        setPage(index);
+        break;
+    }
+  }
+
+  Future uploadImage() async {
+    final pickedFile = await imagePicker.getImage(source: ImageSource.gallery);
+
+    if (pickedFile == null) return;
+
+    await apiService.uploadAsync(pickedFile.path);
   }
 }

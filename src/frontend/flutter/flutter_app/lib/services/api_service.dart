@@ -6,10 +6,10 @@ class ApiService {
   ApiService();
 
   Future<List<String>> listFiles() async {
-    var url = Uri.parse('$appBaseUrl/files');
+    var uri = Uri.parse('$appBaseUrl/files');
 
     final response = await http.get(
-      url,
+      uri,
       headers: {'Access-Control-Allow-Origin': 'true'},
     );
 
@@ -19,10 +19,10 @@ class ApiService {
   }
 
   Future<Map<String, List<String>>> pageFiles() async {
-    var url = Uri.parse('$appBaseUrl/files/page');
+    var uri = Uri.parse('$appBaseUrl/files/page');
 
     final response = await http.get(
-      url,
+      uri,
       headers: {'Access-Control-Allow-Origin': 'true'},
     );
 
@@ -43,5 +43,14 @@ class ApiService {
       Uri.parse(imageSource),
       headers: {'Access-Control-Allow-Origin': 'true'},
     );
+  }
+
+  Future uploadAsync(String path) async {
+    var uri = Uri.parse('$appBaseUrl/files');
+
+    var request = http.MultipartRequest('POST', uri);
+    request.files.add(await http.MultipartFile.fromPath('file', path));
+
+    await request.send();
   }
 }
