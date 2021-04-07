@@ -16,25 +16,36 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final apiService = ApiService();
   final imagePicker = ImagePicker();
-  int selectedIndex = 0;
+  int _selectedIndex = 0;
+  late String _title;
+
+  @override
+  void initState() {
+    _title = widget.title;
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
         backgroundColor: Colors.white,
-        appBar: AppBar(
-          title: Text(widget.title),
-        ),
+        appBar: buildAppBar(),
         body: buildNavigationPage(),
         bottomNavigationBar: buildBottomNavigationBar(),
       ),
     );
   }
 
+  AppBar buildAppBar() {
+    return AppBar(
+      title: Text(_title),
+    );
+  }
+
   Widget buildNavigationPage() {
     return IndexedStack(
-      index: selectedIndex,
+      index: _selectedIndex,
       children: <Widget>[
         ImageGridViewsContainer(),
         Container(),
@@ -45,7 +56,7 @@ class _HomePageState extends State<HomePage> {
 
   Widget buildBottomNavigationBar() {
     return BottomNavigationBar(
-      currentIndex: selectedIndex,
+      currentIndex: _selectedIndex,
       items: const <BottomNavigationBarItem>[
         BottomNavigationBarItem(
           icon: Icon(Icons.grid_view),
@@ -67,21 +78,24 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  void setPage(int index) {
-    setState(() {
-      selectedIndex = index;
-    });
-  }
-
   void onItemTapped(int index) async {
-    switch (index) {
-      case 1:
-        await uploadImage();
-        break;
-      default:
-        setPage(index);
-        break;
-    }
+    if (index == 1) await uploadImage();
+
+    setState(() {
+      switch (index) {
+        case 0:
+          _title = widget.title;
+          _selectedIndex = index;
+          break;
+        case 2:
+          _title = 'Settings';
+          _selectedIndex = index;
+          break;
+        default:
+          _title = widget.title;
+          break;
+      }
+    });
   }
 
   Future uploadImage() async {
