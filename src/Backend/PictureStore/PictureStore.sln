@@ -23,6 +23,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{6500
 		Scripts\pull.sh = Scripts\pull.sh
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PictureStore.Functions", "PictureStore.Functions\PictureStore.Functions.csproj", "{56267354-60FE-4BED-BBD8-A893DE4285DC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -54,6 +56,12 @@ Global
 		{0CA9F598-C619-47EF-9D9E-FDB0AE02BC4A}.RaspberryPiRelease|Any CPU.Build.0 = RaspberryPiRelease|Any CPU
 		{0CA9F598-C619-47EF-9D9E-FDB0AE02BC4A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0CA9F598-C619-47EF-9D9E-FDB0AE02BC4A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{56267354-60FE-4BED-BBD8-A893DE4285DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{56267354-60FE-4BED-BBD8-A893DE4285DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{56267354-60FE-4BED-BBD8-A893DE4285DC}.RaspberryPiRelease|Any CPU.ActiveCfg = Release|Any CPU
+		{56267354-60FE-4BED-BBD8-A893DE4285DC}.RaspberryPiRelease|Any CPU.Build.0 = Release|Any CPU
+		{56267354-60FE-4BED-BBD8-A893DE4285DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{56267354-60FE-4BED-BBD8-A893DE4285DC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
