@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">PictureStoreAndroid</string>
+    <string name="title_home">Home</string>
+    <string name="title_upload">Dashboard</string>
+    <string name="title_settings">Notifications</string>
+    <string name="upload_button">Bilder hochladen</string>
+</resources>
