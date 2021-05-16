@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using System.Threading;
 using PictureStore.Core.Services;
+using PictureStore.Functions.Models;
 
 namespace PictureStore.Functions.Functions.Http
 {

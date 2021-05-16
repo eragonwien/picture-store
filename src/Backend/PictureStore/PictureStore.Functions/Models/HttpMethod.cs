@@ -1,4 +1,4 @@
-﻿namespace PictureStore.Functions.Functions.Http
+﻿namespace PictureStore.Functions.Models
 {
     public static class HttpMethod
     {

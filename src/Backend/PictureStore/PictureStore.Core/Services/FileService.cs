@@ -180,19 +180,13 @@ namespace PictureStore.Core.Services
 
         private async Task SaveImageAsync(Stream imageStream, CancellationToken cancellationToken)
         {
+            if (imageStream is null) throw new ArgumentNullException(nameof(imageStream));
+
             cancellationToken.ThrowIfCancellationRequested();
 
             var creationTime = DateTime.Now;
-            var filename = $"{creationTime.ToString(fileLongDateFormat)}.jpeg";
-            var filePath = Path.Combine(uploadAppSettings.Directory, filename);
 
-            imageStream.Seek(0, SeekOrigin.Begin);
-
-            await using var fileStream = File.Create(filePath);
-            await imageStream.CopyToAsync(fileStream, cancellationToken);
-
-            File.SetCreationTime(filePath, creationTime);
-            File.SetLastWriteTime(filePath, creationTime);
+            // Saves to blob storage
         }
 
         private async Task CreateThumbnailImageAsync(string filePath, string thumbnailFilePath, CancellationToken cancellationToken)
