@@ -9,10 +9,9 @@ namespace PictureStore.Core.Services
 {
     public interface IFileService
     {
-        Task UploadAsync(
-            string inputFileName,
-            Stream stream,
-            CancellationToken cancellationToken);
+        Task UploadAsync(string filename, Stream stream, CancellationToken cancellationToken);
+
+        Task UploadAsync(Stream stream, CancellationToken cancellationToken);
 
         Task<DownloadFileModel> DownloadAsync(string folder, string filename, CancellationToken cancellationToken);
 
@@ -25,5 +24,7 @@ namespace PictureStore.Core.Services
         Task DeleteFileAsync(string folder, string filename, CancellationToken cancellationToken);
 
         Task CleanupFilesAsync(CancellationToken cancellationToken);
+
+        Task PrepareContainersAsync(CancellationToken cancellationToken);
     }
 }

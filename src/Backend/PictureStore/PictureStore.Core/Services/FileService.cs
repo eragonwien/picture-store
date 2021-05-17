@@ -31,6 +31,11 @@ namespace PictureStore.Core.Services
             uploadAppSettings = uploadAppSettingsOptions.Value;
         }
 
+        public async Task UploadAsync(Stream stream, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<DownloadFileModel> DownloadAsync(
             string folder,
             string filename,
@@ -84,7 +89,7 @@ namespace PictureStore.Core.Services
         }
 
         public async Task UploadAsync(
-            string inputFileName,
+            string filename,
             Stream stream,
             CancellationToken cancellationToken)
         {
@@ -147,6 +152,11 @@ namespace PictureStore.Core.Services
                     File.Delete(file);
                 }
             });
+        }
+
+        public async Task PrepareContainersAsync(CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
         }
 
         private static IEnumerable<string> GetFiles(string directory)

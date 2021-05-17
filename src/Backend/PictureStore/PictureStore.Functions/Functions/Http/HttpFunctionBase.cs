@@ -95,6 +95,8 @@ namespace PictureStore.Functions.Functions.Http
 
             try
             {
+                cancellationToken.ThrowIfCancellationRequested();
+
                 return mainProcess(model);
             }
             catch (Exception ex)

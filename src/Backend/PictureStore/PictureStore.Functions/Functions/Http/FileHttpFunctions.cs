@@ -11,16 +11,16 @@ namespace PictureStore.Functions.Functions.Http
 {
     public class FileHttpFunctions : HttpFunctionBase
     {
-        private const string routePrefix = "files/";
-        private const string functionNamePrefix = "files-";
+        private const string RoutePrefix = "files/";
+        private const string FunctionNamePrefix = "files-http-";
 
         public FileHttpFunctions(IFileService fileService) : base(fileService)
         {
         }
 
-        [FunctionName(functionNamePrefix + nameof(UploadFiles))]
+        [FunctionName(FunctionNamePrefix + nameof(UploadFiles))]
         public async Task<IActionResult> UploadFiles(
-            [HttpTrigger(AuthorizationLevel.Function, HttpMethod.POST, Route = routePrefix)] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Function, HttpMethod.POST, Route = RoutePrefix)] HttpRequest req,
             ILogger log,
             CancellationToken cancellationToken)
         {
@@ -35,34 +35,34 @@ namespace PictureStore.Functions.Functions.Http
                     foreach (var file in files)
                     {
                         await using var fileStream = file.OpenReadStream();
-                        await fileService.UploadAsync(file.FileName, fileStream, cancellationToken);
+                        await fileService.UploadAsync(fileStream, cancellationToken);
                     }
 
                     return NoContent();
                 });
         }
 
-        [FunctionName(functionNamePrefix + nameof(ListFiles))]
+        [FunctionName(FunctionNamePrefix + nameof(ListFiles))]
         public async Task<IActionResult> ListFiles(
-            [HttpTrigger(AuthorizationLevel.Function, HttpMethod.GET, Route = routePrefix)] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Function, HttpMethod.GET, Route = RoutePrefix)] HttpRequest req,
             ILogger log,
             CancellationToken cancellationToken)
         {
             return Ok();
         }
 
-        [FunctionName(functionNamePrefix + nameof(DownloadFile))]
+        [FunctionName(FunctionNamePrefix + nameof(DownloadFile))]
         public async Task<IActionResult> DownloadFile(
-            [HttpTrigger(AuthorizationLevel.Function, HttpMethod.GET, Route = routePrefix + "{folder}/{filename}")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Function, HttpMethod.GET, Route = RoutePrefix + "{folder}/{filename}")] HttpRequest req,
             ILogger log,
             CancellationToken cancellationToken)
         {
             return Ok();
         }
 
-        [FunctionName(functionNamePrefix + nameof(DeleteFile))]
+        [FunctionName(FunctionNamePrefix + nameof(DeleteFile))]
         public async Task<IActionResult> DeleteFile(
-            [HttpTrigger(AuthorizationLevel.Function, HttpMethod.DELETE, Route = routePrefix + "{folder}/{filename}")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Function, HttpMethod.DELETE, Route = RoutePrefix + "{folder}/{filename}")] HttpRequest req,
             ILogger log,
             CancellationToken cancellationToken)
         {
