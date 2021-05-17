@@ -34,15 +34,31 @@ namespace PictureStore.Core.Services
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            var client = await CreateContainerClientAsync(DefaultContainerName);
-            var blobName = CreateUploadBlobName();
+            var client = await CreateBlobClientAsync(
+                DefaultContainerName,
+                Path.Combine(DateTime.UtcNow.ToString("yyyyMMdd"), $"{Guid.NewGuid():N}.jpeg"));
 
-            await client.UploadBlobAsync(blobName, stream, cancellationToken);
+            await client.UploadAsync(stream, cancellationToken);
         }
 
         public async Task<DownloadFileModel> DownloadAsync(string folder, string filename, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
+        }
+
+        public async Task<byte[]> DownloadFileAsync(string folder, string filename, CancellationToken cancellationToken)
+        {
+            if (folder == null) throw new ArgumentNullException(nameof(folder));
+            if (filename == null) throw new ArgumentNullException(nameof(filename));
+            
+            cancellationToken.ThrowIfCancellationRequested();
+
+            var client = await CreateBlobClientAsync(DefaultContainerName, BuildDownloadPath(folder, filename));
+
+            await using var downloadStream = new MemoryStream();
+            await client.DownloadToAsync(downloadStream, cancellationToken);
+
+            return downloadStream.ToArray();
         }
 
         public async Task TransferFileToDownloadFolderAsync(CancellationToken cancellationToken)
@@ -62,7 +78,14 @@ namespace PictureStore.Core.Services
 
         public async Task DeleteFileAsync(string folder, string filename, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            if (folder == null) throw new ArgumentNullException(nameof(folder));
+            if (filename == null) throw new ArgumentNullException(nameof(filename));
+            
+            cancellationToken.ThrowIfCancellationRequested();
+
+            var client = await CreateBlobClientAsync(DefaultContainerName, BuildDownloadPath(folder, filename));
+
+            await client.DeleteIfExistsAsync(cancellationToken: cancellationToken);
         }
 
         public async Task CleanupFilesAsync(CancellationToken cancellationToken)
@@ -79,13 +102,41 @@ namespace PictureStore.Core.Services
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            var items = new List<string>();
+            var directories = new List<string>();
 
             var client = await CreateContainerClientAsync(DefaultContainerName);
             var resultSegment = client.GetBlobsByHierarchyAsync(delimiter: "/").AsPages();
 
             await foreach (var page in resultSegment.WithCancellation(cancellationToken))
-                items.AddRange(page.Values.Where(p => p.IsPrefix).Select(p => Path.GetDirectoryName(p.Prefix)));
+                directories.AddRange(page.Values.Where(p => p.IsPrefix).Select(p => Path.GetDirectoryName(p.Prefix)));
+
+            return directories;
+        }
+
+        public async Task<List<string>> ListFilePathsOfDirectoryAsync(string directory, CancellationToken cancellationToken)
+        {
+            if (directory == null) throw new ArgumentNullException(nameof(directory));
+
+            cancellationToken.ThrowIfCancellationRequested();
+
+            var items = await ListBlobItemsOfDirectoryAsync(directory, cancellationToken);
+
+            return items.Select(item => item.Name).ToList();
+        }
+
+        private async Task<List<BlobItem>> ListBlobItemsOfDirectoryAsync(string directory, CancellationToken cancellationToken)
+        {
+            if (directory == null) throw new ArgumentNullException(nameof(directory));
+
+            cancellationToken.ThrowIfCancellationRequested();
+
+            var items = new List<BlobItem>();
+
+            var client = await CreateContainerClientAsync(DefaultContainerName);
+            var resultSegment = client.GetBlobsByHierarchyAsync(prefix: $"{directory}/", delimiter: "/").AsPages();
+
+            await foreach (var page in resultSegment.WithCancellation(cancellationToken))
+                items.AddRange(page.Values.Where(p => p.IsBlob).Select(p => p.Blob));
 
             return items;
         }
@@ -99,6 +150,16 @@ namespace PictureStore.Core.Services
             return serviceClient.GetBlobContainerClient(containerName);
         }
 
+        private async Task<BlobClient> CreateBlobClientAsync(string containerName, string blobName)
+        {
+            if (containerName == null) throw new ArgumentNullException(nameof(containerName));
+            if (blobName == null) throw new ArgumentNullException(nameof(blobName));
+
+            var containerClient = await CreateContainerClientAsync(containerName);
+
+            return containerClient.GetBlobClient(blobName);
+        }
+
         private async Task PrepareContainerAsync(string containerName, CancellationToken cancellationToken)
         {
             if (containerName == null) throw new ArgumentNullException(nameof(containerName));
@@ -108,7 +169,6 @@ namespace PictureStore.Core.Services
             await containerClient.CreateIfNotExistsAsync(cancellationToken: cancellationToken);
         }
 
-        private static string CreateUploadBlobName() =>
-            Path.Combine(DateTime.UtcNow.ToString("yyyyMMdd"), $"{Guid.NewGuid():N}.jpeg");
+        private static string BuildDownloadPath(string directory, string filename) => Path.Combine(directory, Path.ChangeExtension(filename, "jpeg"));
     }
 }

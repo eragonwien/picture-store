@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Azure.Storage.Blobs.Models;
 using Microsoft.Extensions.Options;
 using MimeMapping;
 using PictureStore.Core.Exceptions;
@@ -52,6 +53,11 @@ namespace PictureStore.Core.Services
             result.ContentType = MimeUtility.GetMimeMapping(path);
 
             return result;
+        }
+
+        public async Task<byte[]> DownloadFileAsync(string folder, string filename, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
         }
 
         public async Task TransferFileToDownloadFolderAsync(CancellationToken cancellationToken)
@@ -160,6 +166,11 @@ namespace PictureStore.Core.Services
         }
 
         public async Task<List<string>> ListDirectoriesAsync(CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<List<string>> ListFilePathsOfDirectoryAsync(string directory, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }

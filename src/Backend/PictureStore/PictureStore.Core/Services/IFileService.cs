@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,6 +14,8 @@ namespace PictureStore.Core.Services
 
         Task<DownloadFileModel> DownloadAsync(string folder, string filename, CancellationToken cancellationToken);
 
+        Task<byte[]> DownloadFileAsync(string folder, string filename, CancellationToken cancellationToken);
+
         Task TransferFileToDownloadFolderAsync(CancellationToken cancellationToken);
 
         Task<IEnumerable<DuplicateFileModel>> ListDuplicatesAsync(CancellationToken cancellationToken);
@@ -28,5 +29,7 @@ namespace PictureStore.Core.Services
         Task PrepareContainersAsync(CancellationToken cancellationToken);
 
         Task<List<string>> ListDirectoriesAsync(CancellationToken cancellationToken);
+
+        Task<List<string>> ListFilePathsOfDirectoryAsync(string directory, CancellationToken cancellationToken);
     }
 }
