@@ -10,22 +10,17 @@ using Microsoft.Extensions.Options;
 using PictureStore.Core.Models;
 using PictureStore.Core.Models.AppSettings;
 
-namespace PictureStore.Core.Services
+namespace PictureStore.Infrastructure.Services
 {
-    public class AzureFileService : IFileService
+    public class FileService : IFileService
     {
         private readonly IOptionsSnapshot<PictureStoreAzureAppSettings> azureAppSettingsOptions;
 
         private const string DefaultContainerName = "images";
 
-        public AzureFileService(IOptionsSnapshot<PictureStoreAzureAppSettings> azureAppSettingsOptions)
+        public FileService(IOptionsSnapshot<PictureStoreAzureAppSettings> azureAppSettingsOptions)
         {
             this.azureAppSettingsOptions = azureAppSettingsOptions ?? throw new ArgumentNullException(nameof(azureAppSettingsOptions));
-        }
-
-        public async Task UploadAsync(string filename, Stream stream, CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
         }
 
         public async Task UploadAsync(Stream stream, CancellationToken cancellationToken)
@@ -41,12 +36,7 @@ namespace PictureStore.Core.Services
             await client.UploadAsync(stream, cancellationToken);
         }
 
-        public async Task<DownloadFileModel> DownloadAsync(string folder, string filename, CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task<byte[]> DownloadFileAsync(string folder, string filename, CancellationToken cancellationToken)
+        public async Task<byte[]> DownloadAsync(string folder, string filename, CancellationToken cancellationToken)
         {
             if (folder == null) throw new ArgumentNullException(nameof(folder));
             if (filename == null) throw new ArgumentNullException(nameof(filename));
@@ -55,28 +45,13 @@ namespace PictureStore.Core.Services
 
             var client = await CreateBlobClientAsync(DefaultContainerName, BuildDownloadPath(folder, filename));
 
-            await using var downloadStream = new MemoryStream();
+            using var downloadStream = new MemoryStream();
             await client.DownloadToAsync(downloadStream, cancellationToken);
 
             return downloadStream.ToArray();
         }
 
-        public async Task TransferFileToDownloadFolderAsync(CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task<IEnumerable<DuplicateFileModel>> ListDuplicatesAsync(CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Dictionary<string, string[]> PageFiles()
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task DeleteFileAsync(string folder, string filename, CancellationToken cancellationToken)
+        public async Task DeleteAsync(string folder, string filename, CancellationToken cancellationToken)
         {
             if (folder == null) throw new ArgumentNullException(nameof(folder));
             if (filename == null) throw new ArgumentNullException(nameof(filename));
@@ -86,11 +61,6 @@ namespace PictureStore.Core.Services
             var client = await CreateBlobClientAsync(DefaultContainerName, BuildDownloadPath(folder, filename));
 
             await client.DeleteIfExistsAsync(cancellationToken: cancellationToken);
-        }
-
-        public async Task CleanupFilesAsync(CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
         }
 
         public async Task PrepareContainersAsync(CancellationToken cancellationToken)

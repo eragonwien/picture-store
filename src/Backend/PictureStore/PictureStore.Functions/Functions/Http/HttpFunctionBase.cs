@@ -2,11 +2,11 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using PictureStore.Core.Exceptions;
-using PictureStore.Core.Services;
 using PictureStore.Functions.Extensions;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using PictureStore.Infrastructure.Services;
 
 namespace PictureStore.Functions.Functions.Http
 {

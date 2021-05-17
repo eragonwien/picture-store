@@ -18,6 +18,7 @@
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\PictureStore.Core\PictureStore.Core.csproj" />
+		<ProjectReference Include="..\PictureStore.Infrastructur\PictureStore.Infrastructure.csproj" />
 	</ItemGroup>
 	<ItemGroup>
 		<None Update="host.json">

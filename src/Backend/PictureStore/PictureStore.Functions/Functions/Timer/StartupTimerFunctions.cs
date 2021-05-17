@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
-using PictureStore.Core.Services;
+using PictureStore.Infrastructure.Services;
 
 namespace PictureStore.Functions.Functions.Timer
 {
@@ -11,11 +11,11 @@ namespace PictureStore.Functions.Functions.Timer
     {
         private const string FunctionNamePrefix = "startup-timer-";
 
-        private readonly IStartupService startupService;
+        private readonly IFileService fileService;
 
-        public StartupTimerFunctions(IStartupService startupService)
+        public StartupTimerFunctions(IFileService fileService)
         {
-            this.startupService = startupService ?? throw new ArgumentNullException(nameof(startupService));
+            this.fileService = fileService ?? throw new ArgumentNullException(nameof(fileService));
         }
 
         [FunctionName(FunctionNamePrefix + nameof(StartAsync))]
@@ -30,7 +30,7 @@ namespace PictureStore.Functions.Functions.Timer
                 cancellationToken, 
                 mainProcess: async () =>
                 {
-                    await startupService.StartAsync(cancellationToken);
+                    await fileService.PrepareContainersAsync(cancellationToken);
                 });
         }
     }
