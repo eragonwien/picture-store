@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
 using Microsoft.Extensions.Options;
 using PictureStore.Core.Models;
 using PictureStore.Core.Models.AppSettings;
@@ -71,6 +73,21 @@ namespace PictureStore.Core.Services
         public async Task PrepareContainersAsync(CancellationToken cancellationToken)
         {
             await PrepareContainerAsync(DefaultContainerName, cancellationToken);
+        }
+
+        public async Task<List<string>> ListDirectoriesAsync(CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            var items = new List<string>();
+
+            var client = await CreateContainerClientAsync(DefaultContainerName);
+            var resultSegment = client.GetBlobsByHierarchyAsync(delimiter: "/").AsPages();
+
+            await foreach (var page in resultSegment.WithCancellation(cancellationToken))
+                items.AddRange(page.Values.Where(p => p.IsPrefix).Select(p => Path.GetDirectoryName(p.Prefix)));
+
+            return items;
         }
 
         private async Task<BlobContainerClient> CreateContainerClientAsync(string containerName)

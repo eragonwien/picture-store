@@ -23,7 +23,7 @@ namespace PictureStore.Functions.Functions.Http
             HttpRequest request,
             ILogger log,
             CancellationToken cancellationToken,
-            Func<TModel, Task<IActionResult>> mainProcess)
+            Func<Task<IActionResult>> mainProcess)
             where TModel : class
         {
             if (request is null) throw new ArgumentNullException(nameof(request));
@@ -34,6 +34,23 @@ namespace PictureStore.Functions.Functions.Http
 
             return await TryProcessAsync(
                 model, 
+                log,
+                cancellationToken,
+                _ => mainProcess());
+        }
+
+        protected async Task<IActionResult> ProcessAsync(
+            HttpRequest request,
+            ILogger log,
+            CancellationToken cancellationToken,
+            Func<dynamic, Task<IActionResult>> mainProcess)
+        {
+            if (request is null) throw new ArgumentNullException(nameof(request));
+            if (log is null) throw new ArgumentNullException(nameof(log));
+            if (mainProcess is null) throw new ArgumentNullException(nameof(mainProcess));
+
+            return await TryProcessAsync(
+                null, 
                 log,
                 cancellationToken,
                 mainProcess);
@@ -90,7 +107,6 @@ namespace PictureStore.Functions.Functions.Http
             Func<TModel, Task<IActionResult>> mainProcess)
             where TModel : class
         {
-            if (model is null) throw new ArgumentNullException(nameof(model));
             if (mainProcess is null) throw new ArgumentNullException(nameof(mainProcess));
 
             try

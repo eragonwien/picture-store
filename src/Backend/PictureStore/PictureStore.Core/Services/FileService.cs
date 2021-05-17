@@ -159,6 +159,11 @@ namespace PictureStore.Core.Services
             throw new NotImplementedException();
         }
 
+        public async Task<List<string>> ListDirectoriesAsync(CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
         private static IEnumerable<string> GetFiles(string directory)
         {
             var files = new List<string>();

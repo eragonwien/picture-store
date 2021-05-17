@@ -19,12 +19,12 @@ namespace PictureStore.Functions.Functions.Http
         }
 
         [FunctionName(FunctionNamePrefix + nameof(UploadFiles))]
-        public async Task<IActionResult> UploadFiles(
+        public Task<IActionResult> UploadFiles(
             [HttpTrigger(AuthorizationLevel.Function, HttpMethod.POST, Route = RoutePrefix)] HttpRequest req,
             ILogger log,
             CancellationToken cancellationToken)
         {
-            return await ProcessFileAsync(
+            return ProcessFileAsync(
                 req,
                 log,
                 cancellationToken,
@@ -43,12 +43,16 @@ namespace PictureStore.Functions.Functions.Http
         }
 
         [FunctionName(FunctionNamePrefix + nameof(ListFiles))]
-        public async Task<IActionResult> ListFiles(
+        public Task<IActionResult> ListFiles(
             [HttpTrigger(AuthorizationLevel.Function, HttpMethod.GET, Route = RoutePrefix)] HttpRequest req,
             ILogger log,
             CancellationToken cancellationToken)
         {
-            return Ok();
+            return ProcessAsync(
+                req,
+                log,
+                cancellationToken,
+                mainProcess: async _ => Ok(await fileService.ListDirectoriesAsync(cancellationToken)));
         }
 
         [FunctionName(FunctionNamePrefix + nameof(DownloadFile))]

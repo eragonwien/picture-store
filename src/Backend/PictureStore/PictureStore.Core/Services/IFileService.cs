@@ -26,5 +26,7 @@ namespace PictureStore.Core.Services
         Task CleanupFilesAsync(CancellationToken cancellationToken);
 
         Task PrepareContainersAsync(CancellationToken cancellationToken);
+
+        Task<List<string>> ListDirectoriesAsync(CancellationToken cancellationToken);
     }
 }
