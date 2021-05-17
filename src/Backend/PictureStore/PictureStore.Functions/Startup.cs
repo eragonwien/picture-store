@@ -3,7 +3,6 @@ using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PictureStore.Core.Models.AppSettings;
-using PictureStore.Core.Services;
 using PictureStore.Functions;
 using PictureStore.Infrastructure.Services;
 
@@ -21,7 +20,6 @@ namespace PictureStore.Functions
 
             builder.Services.Configure<PictureStoreAzureAppSettings>(configuration.GetSection(PictureStoreAzureAppSettings.Section));
 
-            builder.Services.AddTransient<IStartupService, StartupService>();
             builder.Services.AddTransient<IFileService, FileService>();
         }
 

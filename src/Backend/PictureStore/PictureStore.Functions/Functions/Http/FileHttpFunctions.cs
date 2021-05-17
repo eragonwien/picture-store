@@ -5,6 +5,7 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using System.Threading;
+using PictureStore.Core.Models;
 using PictureStore.Infrastructure.Services;
 
 namespace PictureStore.Functions.Functions.Http
@@ -81,7 +82,7 @@ namespace PictureStore.Functions.Functions.Http
                 req,
                 log,
                 cancellationToken,
-                mainProcess: async _ => Ok(await fileService.DownloadAsync(directory, filename, cancellationToken)));
+                mainProcess: async _ => FileResult(await fileService.DownloadAsync(directory, filename, cancellationToken), "image/jpeg"));
         }
 
         [FunctionName(FunctionNamePrefix + nameof(DeleteFile))]

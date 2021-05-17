@@ -4,8 +4,10 @@ using Microsoft.Extensions.Logging;
 using PictureStore.Core.Exceptions;
 using PictureStore.Functions.Extensions;
 using System;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using PictureStore.Core.Models;
 using PictureStore.Infrastructure.Services;
 
 namespace PictureStore.Functions.Functions.Http
@@ -93,6 +95,9 @@ namespace PictureStore.Functions.Functions.Http
 
             return new BadRequestObjectResult(value);
         }
+
+        protected IActionResult FileResult(byte[] bytes, string contentType = "application/octet-stream")
+            => new FileContentResult(bytes, contentType);
 
         protected void ThrowIfFileIsEmpty(IFormFileCollection files)
         {
