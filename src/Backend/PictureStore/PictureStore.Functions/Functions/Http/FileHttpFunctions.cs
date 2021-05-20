@@ -87,7 +87,7 @@ namespace PictureStore.Functions.Functions.Http
 
         [FunctionName(FunctionNamePrefix + nameof(DeleteFile))]
         public Task<IActionResult> DeleteFile(
-            [HttpTrigger(AuthorizationLevel.Function, HttpMethod.DELETE, Route = RoutePrefix + "{directory}/{filename}")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Function, HttpMethod.DELETE, Route = RoutePrefix + "/{directory}/{filename}")] HttpRequest req,
             ILogger log,
             string directory,
             string filename,

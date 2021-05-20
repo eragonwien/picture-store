@@ -4,10 +4,8 @@ using Microsoft.Extensions.Logging;
 using PictureStore.Core.Exceptions;
 using PictureStore.Functions.Extensions;
 using System;
-using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using PictureStore.Core.Models;
 using PictureStore.Infrastructure.Services;
 
 namespace PictureStore.Functions.Functions.Http
@@ -105,7 +103,7 @@ namespace PictureStore.Functions.Functions.Http
                 throw new UploadFileEmptyException();
         }
 
-        private Task<IActionResult> TryProcessAsync<TModel>(
+        private async Task<IActionResult> TryProcessAsync<TModel>(
             TModel model,
             ILogger log,
             CancellationToken cancellationToken,
@@ -118,7 +116,11 @@ namespace PictureStore.Functions.Functions.Http
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
-                return mainProcess(model);
+                return await mainProcess(model);
+            }
+            catch (Azure.RequestFailedException azureRequestFailedEx)
+            {
+                throw;
             }
             catch (Exception ex)
             {
