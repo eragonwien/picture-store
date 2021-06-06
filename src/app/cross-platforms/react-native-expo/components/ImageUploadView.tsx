@@ -12,7 +12,7 @@ export const ImageUploadView = ({ height }: { height: number | string }) => {
   return (
     <TouchableOpacity
       style={{ ...styles.container, height: height }}
-      onPress={async () => {}}
+      onPress={async () => { }}
     >
       <MaterialIcons name="file-upload" size={64} color={theme.colors.text} />
       <Text>Upload</Text>
