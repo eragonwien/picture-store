@@ -6,7 +6,7 @@ import { IconButton } from "../components/IconButton";
 import { ImageUploadView } from "../components/ImageUploadView";
 import { View, Text, largeSize, TitleText } from "../components/Themed";
 
-export const TabUploadScreen = ({}: {}) => {
+export const TabUploadScreen = ({ }: {}) => {
   const renderItem = ({ item }: { item: any }) => {
     return (
       <View style={styles.listItem}>
