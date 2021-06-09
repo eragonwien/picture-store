@@ -2,8 +2,6 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { Theme, useTheme } from '@react-navigation/native';
 import * as React from "react";
 import { Image, StyleSheet } from "react-native";
-import { Badge, LinearProgress, ListItem } from "react-native-elements";
-import { Avatar } from 'react-native-elements/dist/avatar/Avatar';
 import { ScrollView } from 'react-native-gesture-handler';
 import { ImageUploadView } from "../components/ImageUploadView";
 import { ProgressIcon } from '../components/ProgressIcon';
@@ -21,35 +19,6 @@ export const TabUploadScreen = ({ }: {}) => {
         <TitleText style={{ padding: 8, textAlign: "left", width: "100%" }}>
           Hochgeladene Bilder
         </TitleText>
-        <ScrollView style={{ width: "100%", backgroundColor: 'red' }}>
-          {
-            DATA.map((e, i) => (
-              <ListItem
-                containerStyle={styles.listItem}
-                key={e.id}
-                onPress={async () => {
-
-                }}
-                bottomDivider>
-                <Avatar
-                  containerStyle={styles.listItemAvatar}
-                  source={{ uri: e.uri }}
-                  imageProps={{ resizeMode: "contain" }}
-                  rounded={true}
-                />
-                <ListItem.Content>
-                  <ListItem.Title style={styles.listItemTitle}>{e.title}</ListItem.Title>
-                  <LinearProgress
-                    color="primary"
-                    value={e.progress}
-                    variant="determinate"
-                    style={styles.listItemProgressBar} />
-                </ListItem.Content>
-                <ProgressIcon style={styles.listItemBadge} progress={e.progress} />
-              </ListItem>
-            ))
-          }
-        </ScrollView>
       </View>
     </View>
   );
@@ -72,7 +41,7 @@ const createStyles = (theme: Theme) => {
       height: "65%",
       display: "flex",
       alignItems: "center",
-      justifyContent: "center",
+      justifyContent: "flex-start",
       margin: 8,
     },
     listTitle: {
