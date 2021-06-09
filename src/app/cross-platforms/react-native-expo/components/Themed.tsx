@@ -7,6 +7,8 @@ export const smallSize = 8;
 export const mediumSize = 16;
 export const largeSize = 32;
 
+export const successColor = "";
+
 export const useThemeColor = (
   props: { light?: string; dark?: string },
   colorName: keyof typeof Colors.light & keyof typeof Colors.dark
