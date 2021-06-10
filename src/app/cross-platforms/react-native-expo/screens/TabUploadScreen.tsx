@@ -1,11 +1,8 @@
-import { MaterialIcons } from '@expo/vector-icons';
 import { Theme, useTheme } from '@react-navigation/native';
 import * as React from "react";
-import { Image, StyleSheet } from "react-native";
-import { ScrollView } from 'react-native-gesture-handler';
+import { StyleSheet } from "react-native";
 import { ImageUploadView } from "../components/ImageUploadView";
-import { ProgressIcon } from '../components/ProgressIcon';
-import { View, largeSize, TitleText, Text } from "../components/Themed";
+import { View, TitleText } from "../components/Themed";
 
 export const TabUploadScreen = ({ }: {}) => {
 
@@ -16,7 +13,7 @@ export const TabUploadScreen = ({ }: {}) => {
     <View style={styles.container}>
       <ImageUploadView height={"30%"} />
       <View style={styles.listContainer}>
-        <TitleText style={{ padding: 8, textAlign: "left", width: "100%" }}>
+        <TitleText style={styles.listTitle}>
           Hochgeladene Bilder
         </TitleText>
       </View>
@@ -33,8 +30,10 @@ const createStyles = (theme: Theme) => {
       justifyContent: "flex-start",
       alignContent: "center",
     },
-    list: {
-
+    listTitle: {
+      padding: 8,
+      textAlign: "left",
+      width: "100%"
     },
     listContainer: {
       maxWidth: "100%",
@@ -44,27 +43,6 @@ const createStyles = (theme: Theme) => {
       justifyContent: "flex-start",
       margin: 8,
     },
-    listTitle: {
-      fontSize: largeSize,
-      fontWeight: "bold",
-      color: theme.colors.text,
-    },
-    listItem: {
-      width: "100%",
-    },
-    listItemTitle: {
-      color: theme.colors.text,
-    },
-    listItemAvatar: {
-      color: theme.colors.text,
-      backgroundColor: 'white',
-
-    },
-    listItemProgressBar: {
-      marginTop: 8,
-    },
-    listItemBadge: {
-    }
   });
 };
 
