@@ -3,9 +3,10 @@ import { useState } from 'react';
 import { MaterialIcons } from "@expo/vector-icons";
 import { StyleSheet } from "react-native";
 import { TouchableOpacity } from "react-native";
-import { mediumSize, smallSize, Text } from "../components/Themed";
+import { mediumSize, smallSize } from "../components/Themed";
 import { Theme, useTheme } from "@react-navigation/native";
 import { ImageGalleryDialog } from './ImageGalleryDialog';
+import { Text } from './core/Text';
 
 export const ImageUploadView = ({ height }: { height: number | string }) => {
   const theme = useTheme();

@@ -1,8 +1,9 @@
 import { Theme, useTheme } from '@react-navigation/native';
 import React from 'react';
-import { Modal, Pressable, StyleSheet } from 'react-native';
-import { mediumSize, smallSize, Text, View } from './Themed';
+import { Modal, StyleSheet } from 'react-native';
+import { mediumSize, smallSize } from './Themed';
 import { ImageBrowser } from 'expo-image-picker-multiple';
+import { View } from './core/View';
 
 export const ImageGalleryDialog = ({ visible, setVisible }: { visible: boolean, setVisible: any }) => {
 
