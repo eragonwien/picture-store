@@ -1,28 +1,21 @@
 import * as React from "react";
 import { StyleSheet } from "react-native";
 import { View } from '../components/core/View';
-import { Title } from '../components/core/Title';
 import { TabUploadScreenImageUploadView } from '../components/TabUploadScreenImageUploadView';
-import { useTheme } from 'react-native-paper';
 
 export const TabUploadScreen = ({ }: {}) => {
 
-  const theme = useTheme();
-  const styles = createStyles(theme);
+  const styles = createStyles();
 
   return (
     <View style={styles.container}>
       <TabUploadScreenImageUploadView height="30%" />
-      <View style={styles.listContainer}>
-        <Title style={styles.listTitle}>
-          Hochgeladene Bilder
-        </Title>
-      </View>
+      <View style={styles.listContainer}></View>
     </View>
   );
 };
 
-const createStyles = (theme: ReactNativePaper.Theme) => {
+const createStyles = () => {
   return StyleSheet.create({
     container: {
       width: "100%",
@@ -30,11 +23,6 @@ const createStyles = (theme: ReactNativePaper.Theme) => {
       display: "flex",
       justifyContent: "flex-start",
       alignContent: "center",
-    },
-    listTitle: {
-      padding: 8,
-      textAlign: "left",
-      width: "100%"
     },
     listContainer: {
       maxWidth: "100%",

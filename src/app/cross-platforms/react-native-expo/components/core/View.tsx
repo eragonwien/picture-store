@@ -1,10 +1,10 @@
 import React from 'react';
 import { View as DefaultView } from "react-native";
+import { useTheme } from 'react-native-paper';
 
 export const View = (props: DefaultView["props"]) => {
     const { style, ...otherProps } = props;
+    const theme = useTheme();
 
-    // style = { [{ color, fontSize: largeSize, fontWeight: "bold" }, style]}
-
-    return <DefaultView style={style} {...otherProps} />;
+    return <DefaultView style={[{ backgroundColor: theme.colors.background }, style]} {...otherProps} />;
 };

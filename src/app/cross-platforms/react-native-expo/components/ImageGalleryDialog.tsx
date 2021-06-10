@@ -1,14 +1,12 @@
-import { Theme, useTheme } from '@react-navigation/native';
 import React from 'react';
-import { Modal, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { View } from './core/View';
-import { Button, Dialog, Paragraph, Portal } from 'react-native-paper';
+import { Button, Dialog, Paragraph, Portal, useTheme } from 'react-native-paper';
 import { smallSize, mediumSize } from '../constants/Sizes';
 
 export const ImageGalleryDialog = ({ visible, setVisible }: { visible: boolean, setVisible: any }) => {
 
-    const theme = useTheme();
-    const styles = createStyles(theme);
+    const styles = createStyles();
 
     const onDismiss = () => setVisible(false);
 
@@ -29,7 +27,8 @@ export const ImageGalleryDialog = ({ visible, setVisible }: { visible: boolean, 
     );
 }
 
-const createStyles = (theme: Theme) => {
+const createStyles = () => {
+    const theme = useTheme();
     return StyleSheet.create({
         container: {
             display: "flex",

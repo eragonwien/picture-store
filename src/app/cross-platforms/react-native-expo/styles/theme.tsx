@@ -10,7 +10,7 @@ export const lightTheme: ReactNativePaper.Theme = {
         primary: "#8e44ad",
         error: "#c0392b",
         background: "#ecf0f1",
-        text: "#2c3e50",
+        text: "white",
     },
     dark: DefaultTheme.dark,
     fonts: {

@@ -4,7 +4,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { StyleSheet } from "react-native";
 import { TouchableOpacity } from "react-native";
 import { ImageGalleryDialog } from './ImageGalleryDialog';
-import { Text } from './core/Text';
+import { Text } from 'react-native';
 import { useTheme } from 'react-native-paper';
 import { smallSize, mediumSize } from '../constants/Sizes';
 
@@ -21,8 +21,7 @@ export const TabUploadScreenImageUploadView = ({ height }: { height: number | st
         setGalleryVisible(true);
       }}
     >
-      <MaterialIcons name="file-upload" size={64} color={theme.colors.text} />
-      <Text>Upload</Text>
+      <MaterialIcons name="file-upload" size={64} color={theme.colors.primary} />
       <ImageGalleryDialog visible={galleryVisible} setVisible={setGalleryVisible} />
     </TouchableOpacity>
   );
@@ -36,7 +35,7 @@ const createStyles = (theme: ReactNativePaper.Theme) => {
       alignItems: "center",
       justifyContent: "center",
       margin: smallSize,
-      borderColor: theme.colors.text,
+      borderColor: theme.colors.primary,
       borderWidth: smallSize,
       borderRadius: mediumSize,
       borderStyle: "dashed",
