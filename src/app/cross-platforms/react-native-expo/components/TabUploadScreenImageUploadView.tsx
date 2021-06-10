@@ -3,12 +3,12 @@ import { useState } from 'react';
 import { MaterialIcons } from "@expo/vector-icons";
 import { StyleSheet } from "react-native";
 import { TouchableOpacity } from "react-native";
-import { mediumSize, smallSize } from "../components/Themed";
-import { Theme, useTheme } from "@react-navigation/native";
 import { ImageGalleryDialog } from './ImageGalleryDialog';
 import { Text } from './core/Text';
+import { useTheme } from 'react-native-paper';
+import { smallSize, mediumSize } from '../constants/Sizes';
 
-export const ImageUploadView = ({ height }: { height: number | string }) => {
+export const TabUploadScreenImageUploadView = ({ height }: { height: number | string }) => {
   const theme = useTheme();
   const styles = createStyles(theme);
 
@@ -28,7 +28,7 @@ export const ImageUploadView = ({ height }: { height: number | string }) => {
   );
 };
 
-const createStyles = (theme: Theme) => {
+const createStyles = (theme: ReactNativePaper.Theme) => {
   return StyleSheet.create({
     container: {
       display: "flex",

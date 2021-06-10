@@ -1,9 +1,9 @@
-import { Theme, useTheme } from '@react-navigation/native';
 import * as React from "react";
 import { StyleSheet } from "react-native";
-import { ImageUploadView } from "../components/ImageUploadView";
 import { View } from '../components/core/View';
 import { Title } from '../components/core/Title';
+import { TabUploadScreenImageUploadView } from '../components/TabUploadScreenImageUploadView';
+import { useTheme } from 'react-native-paper';
 
 export const TabUploadScreen = ({ }: {}) => {
 
@@ -12,7 +12,7 @@ export const TabUploadScreen = ({ }: {}) => {
 
   return (
     <View style={styles.container}>
-      <ImageUploadView height={"30%"} />
+      <TabUploadScreenImageUploadView height="30%" />
       <View style={styles.listContainer}>
         <Title style={styles.listTitle}>
           Hochgeladene Bilder
@@ -22,7 +22,7 @@ export const TabUploadScreen = ({ }: {}) => {
   );
 };
 
-const createStyles = (theme: Theme) => {
+const createStyles = (theme: ReactNativePaper.Theme) => {
   return StyleSheet.create({
     container: {
       width: "100%",

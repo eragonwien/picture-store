@@ -1,15 +1,10 @@
 import React from 'react';
-import { ThemeProps, useThemeColor } from '../Themed';
 import { View as DefaultView } from "react-native";
 
-export type ViewProps = ThemeProps & DefaultView["props"];
+export const View = (props: DefaultView["props"]) => {
+    const { style, ...otherProps } = props;
 
-export const View = (props: ViewProps) => {
-    const { style, lightColor, darkColor, ...otherProps } = props;
-    const backgroundColor = useThemeColor(
-        { light: lightColor, dark: darkColor },
-        "background"
-    );
+    // style = { [{ color, fontSize: largeSize, fontWeight: "bold" }, style]}
 
-    return <DefaultView style={[{ backgroundColor }, style]} {...otherProps} />;
+    return <DefaultView style={style} {...otherProps} />;
 };
