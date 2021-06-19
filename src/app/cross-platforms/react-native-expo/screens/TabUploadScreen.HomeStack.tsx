@@ -3,7 +3,7 @@ import { StyleSheet } from "react-native";
 import { View } from '../components/core/View';
 import { TabUploadScreenImageUploadView } from '../components/TabUploadScreenImageUploadView';
 
-export const TabUploadScreen = ({ }: {}) => {
+export const TabUploadScreenHomeStack = ({ }: {}) => {
 
   const styles = createStyles();
 

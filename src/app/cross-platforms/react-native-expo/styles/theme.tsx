@@ -1,4 +1,5 @@
 import { DefaultTheme, DarkTheme } from 'react-native-paper';
+import { StyleSheet } from "react-native";
 
 export const lightTheme: ReactNativePaper.Theme = {
     ...DefaultTheme,

@@ -1,28 +1,23 @@
 import * as React from "react";
-import { useState } from 'react';
 import { MaterialIcons } from "@expo/vector-icons";
 import { StyleSheet } from "react-native";
 import { TouchableOpacity } from "react-native";
-import { ImageGalleryDialog } from './ImageGalleryDialog';
-import { Text } from 'react-native';
 import { useTheme } from 'react-native-paper';
 import { smallSize, mediumSize } from '../constants/Sizes';
+import { useNavigation } from '@react-navigation/native';
+import { TabUploadScreenImagePickerStackName } from '../constants/Screens';
 
 export const TabUploadScreenImageUploadView = ({ height }: { height: number | string }) => {
   const theme = useTheme();
   const styles = createStyles(theme);
-
-  const [galleryVisible, setGalleryVisible] = useState(false);
+  const navigation = useNavigation();
 
   return (
     <TouchableOpacity
       style={{ ...styles.container, height: height }}
-      onPress={async () => {
-        setGalleryVisible(true);
-      }}
+      onPress={() => navigation.navigate(TabUploadScreenImagePickerStackName)}
     >
       <MaterialIcons name="file-upload" size={64} color={theme.colors.primary} />
-      <ImageGalleryDialog visible={galleryVisible} setVisible={setGalleryVisible} />
     </TouchableOpacity>
   );
 };

@@ -6,10 +6,11 @@ import { createMaterialBottomTabNavigator } from '@react-navigation/material-bot
 import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import { useTheme } from 'react-native-paper';
 import { StyleSheet } from "react-native";
-import { TabUploadScreenName, TabOneScreenName, TabTwoScreenName } from '../constants/Screens';
+import { TabUploadScreenHomeStackName, TabOneScreenName, TabTwoScreenName, TabUploadScreenHomeStackTitle } from '../constants/Screens';
 import { TabUploadStackScreen } from './TabUploadStack';
 import { TabTwoStackScreen } from './TabTwoStack';
 import { TabOneStackScreen } from './TabOneStack';
+import { navigationBarIconSize } from '../constants/Sizes';
 
 const Tab = createMaterialBottomTabNavigator();
 
@@ -21,7 +22,7 @@ export const Navigation = () => {
     return (
         <NavigationContainer>
             <Tab.Navigator
-                initialRouteName={TabUploadScreenName}
+                initialRouteName={TabUploadScreenHomeStackName}
                 activeColor={theme.colors.text}
                 barStyle={styles.bar}
             >
@@ -29,21 +30,24 @@ export const Navigation = () => {
                     name={TabOneScreenName}
                     component={TabOneStackScreen}
                     options={{
-                        tabBarIcon: ({ color }) => <MaterialIcons name="collections" color={color} size={24} />
+                        tabBarIcon: ({ color }) => <MaterialIcons name="collections" color={color} size={navigationBarIconSize} />,
+                        title: "One",
                     }}
                 />
                 <Tab.Screen
-                    name={TabUploadScreenName}
+                    name={TabUploadScreenHomeStackName}
                     component={TabUploadStackScreen}
                     options={{
-                        tabBarIcon: ({ color }) => <MaterialIcons name="cloud-upload" color={color} size={24} />
+                        tabBarIcon: ({ color }) => <MaterialIcons name="cloud-upload" color={color} size={navigationBarIconSize} />,
+                        title: TabUploadScreenHomeStackTitle,
                     }}
                 />
                 <Tab.Screen
                     name={TabTwoScreenName}
                     component={TabTwoStackScreen}
                     options={{
-                        tabBarIcon: ({ color }) => <MaterialCommunityIcons name="cog" color={color} size={24} />
+                        tabBarIcon: ({ color }) => <MaterialCommunityIcons name="cog" color={color} size={navigationBarIconSize} />,
+                        title: "Two",
                     }}
                 />
             </Tab.Navigator>
