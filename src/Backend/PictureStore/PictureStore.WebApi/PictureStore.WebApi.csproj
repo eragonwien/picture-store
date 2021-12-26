@@ -9,6 +9,7 @@
    </PropertyGroup>
 
    <ItemGroup>
+      <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="5.0.0" />
       <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.14.0" />
       <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
    </ItemGroup>
@@ -16,17 +17,9 @@
    <Target Name="CopyAppSettingsJson" AfterTargets="Build">
       <Message Text="Copy appsettings.json" Importance="high" />
 
-      <Copy
-         SourceFiles="$(SolutionDir)Configurations\appsettings.json"
-         DestinationFiles="$(ProjectDir)\appsettings.json"
-         Condition="EXISTS('$(SolutionDir)Configurations\appsettings.json') AND !EXISTS('$(SolutionDir)Configurations\appsettings.$(Configuration).json')"
-      />
+      <Copy SourceFiles="$(SolutionDir)Configurations\appsettings.json" DestinationFiles="$(ProjectDir)\appsettings.json" Condition="EXISTS('$(SolutionDir)Configurations\appsettings.json') AND !EXISTS('$(SolutionDir)Configurations\appsettings.$(Configuration).json')" />
 
-      <Copy
-         SourceFiles="$(SolutionDir)Configurations\appsettings.$(Configuration).json"
-         DestinationFiles="$(ProjectDir)\appsettings.json"
-         Condition="EXISTS('$(SolutionDir)Configurations\appsettings.$(Configuration).json')"
-      />
+      <Copy SourceFiles="$(SolutionDir)Configurations\appsettings.$(Configuration).json" DestinationFiles="$(ProjectDir)\appsettings.json" Condition="EXISTS('$(SolutionDir)Configurations\appsettings.$(Configuration).json')" />
       
    </Target>
 
